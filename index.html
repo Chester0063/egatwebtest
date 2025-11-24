@@ -241,6 +241,7 @@
       background: rgba(255, 255, 255, 0.12);
       border: 1px solid rgba(255, 255, 255, 0.3);
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       font-size: 14px;
@@ -359,7 +360,7 @@
 </head>
 <body>
   <div id="app">
-    <!-- 統一的外框：Header + router-view + Footer -->
+    <!-- 統一外框 -->
     <header>
       <div class="nav-container">
         <div class="logo-group">
@@ -367,13 +368,12 @@
           <div class="logo-text">長榮航太科技</div>
         </div>
 
-        <!-- 手機版漢堡 -->
+        <!-- 手機漢堡 -->
         <div class="nav-toggle" @click="mobileNavOpen = !mobileNavOpen">
           ☰
         </div>
 
         <nav :class="['nav-links', { open: mobileNavOpen }]">
-          <!-- 使用 Vue Router 的 router-link -->
           <router-link to="/" exact>首頁</router-link>
           <router-link to="/about">公司簡介</router-link>
           <router-link to="/services">服務項目</router-link>
@@ -385,7 +385,6 @@
     </header>
 
     <main>
-      <!-- 這裡會依照網址顯示不同頁面 -->
       <router-view></router-view>
     </main>
 
@@ -405,15 +404,14 @@
   </div>
 
   <script>
-    const { createApp, ref, computed } = Vue;
+    const { createApp, ref, computed, onMounted, onBeforeUnmount } = Vue;
     const { createRouter, createWebHashHistory } = VueRouter;
 
-    /* ----------- 各頁面元件 ----------- */
-
-    // 首頁（含 Hero + 精簡內容）
+    /* ----------- 首頁元件 ----------- */
     const HomePage = {
       name: 'HomePage',
       setup() {
+        // 左側 Hero 背景輪播
         const slides = ref([
           {
             title: '攜手守護每一段飛行旅程',
@@ -438,7 +436,9 @@
         const currentSlideIndex = ref(0);
         let timer = null;
 
-        const currentSlide = computed(() => slides.value[currentSlideIndex.value]);
+        const currentSlide = computed(
+          () => slides.value[currentSlideIndex.value]
+        );
         const heroBackgroundStyle = computed(() => ({
           backgroundImage: `url('${currentSlide.value.image}')`
         }));
@@ -464,15 +464,47 @@
           }
         };
 
-        Vue.onMounted(startCarousel);
-        Vue.onBeforeUnmount(stopCarousel);
+        onMounted(startCarousel);
+        onBeforeUnmount(stopCarousel);
+
+        // 右側框框圖片輪播（page1/page2/page3）
+        const rightImages = ref([
+          'images/page1.jpg',
+          'images/page2.jpg',
+          'images/page3.jpg'
+        ]);
+
+        const currentRightIndex = ref(0);
+        let rightTimer = null;
+
+        const nextRight = () => {
+          currentRightIndex.value =
+            (currentRightIndex.value + 1) % rightImages.value.length;
+        };
+
+        const startRightCarousel = () => {
+          if (rightTimer) return;
+          rightTimer = setInterval(nextRight, 4000); // 每 4 秒換一張
+        };
+
+        const stopRightCarousel = () => {
+          if (rightTimer) {
+            clearInterval(rightTimer);
+            rightTimer = null;
+          }
+        };
+
+        onMounted(startRightCarousel);
+        onBeforeUnmount(stopRightCarousel);
 
         return {
           slides,
           currentSlideIndex,
           currentSlide,
           heroBackgroundStyle,
-          goToSlide
+          goToSlide,
+          rightImages,
+          currentRightIndex
         };
       },
       template: `
@@ -499,6 +531,8 @@
                   ></div>
                 </div>
               </div>
+
+              <!-- 右側：三張圖片輪播 -->
               <div class="hero-image-placeholder">
                 <img
                   :src="rightImages[currentRightIndex]"
@@ -507,16 +541,16 @@
                 >
                 <div style="margin-top:8px; display:flex; gap:6px;">
                   <div
-                      v-for="(img, idx) in rightImages"
-                      :key="idx"
-                      @click="currentRightIndex = idx"
-                      :style="{
-                        width: '8px',
-                        height: '8px',
-                        borderRadius: '50%',
-                        backgroundColor: idx === currentRightIndex ? '#ffd153' : 'rgba(255,255,255,0.4)',
-                        cursor: 'pointer'
-                      }"
+                    v-for="(img, idx) in rightImages"
+                    :key="idx"
+                    @click="currentRightIndex = idx"
+                    :style="{
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      backgroundColor: idx === currentRightIndex ? '#ffd153' : 'rgba(255,255,255,0.4)',
+                      cursor: 'pointer'
+                    }"
                   ></div>
                 </div>
               </div>
@@ -537,25 +571,23 @@
       `
     };
 
-    // 公司簡介頁
+    /* ----------- 其他頁面 ----------- */
+
     const AboutPage = {
       template: `
-        <div>
-          <section>
-            <h2 class="section-title">公司簡介</h2>
-            <p class="section-subtitle">
-              介紹公司沿革、核心能力與經營理念，可依實際官網內容調整文字。
-            </p>
-            <div class="box">
-              長榮航太科技承襲航空集團技術資源與維修能量，提供客戶機隊維修、改裝與零組件維修等整體解決方案。
-              公司以「安全、品質、效率」為核心價值，持續優化維修流程，引進創新科技，並與國際主要航空與航太產業夥伴維持緊密合作。
-            </div>
-          </section>
-        </div>
+        <section>
+          <h2 class="section-title">公司簡介</h2>
+          <p class="section-subtitle">
+            介紹公司沿革、核心能力與經營理念，可依實際官網內容調整文字。
+          </p>
+          <div class="box">
+            長榮航太科技承襲航空集團技術資源與維修能量，提供客戶機隊維修、改裝與零組件維修等整體解決方案。
+            公司以「安全、品質、效率」為核心價值，持續優化維修流程，引進創新科技，並與國際主要航空與航太產業夥伴維持緊密合作。
+          </div>
+        </section>
       `
     };
 
-    // 服務項目頁
     const ServicesPage = {
       data() {
         return {
@@ -650,7 +682,7 @@
       `
     };
 
-    /* ----------- Router 設定（Hash 模式，適合 GitHub Pages） ----------- */
+    /* ----------- Router ----------- */
     const routes = [
       { path: '/', component: HomePage },
       { path: '/about', component: AboutPage },
@@ -661,7 +693,7 @@
     ];
 
     const router = createRouter({
-      history: createWebHashHistory(), // URL 會變成 #/about，適合 GitHub Pages
+      history: createWebHashHistory(), // #/ 路徑，適合 GitHub Pages
       routes
     });
 
@@ -669,7 +701,6 @@
     const app = createApp({
       setup() {
         const mobileNavOpen = ref(false);
-        // 切換路由時自動關閉手機選單
         router.afterEach(() => {
           mobileNavOpen.value = false;
         });
@@ -682,4 +713,3 @@
   </script>
 </body>
 </html>
-
