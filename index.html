@@ -356,6 +356,44 @@
         text-align: left;
       }
     }
+
+    /* 新增：服務卡片圖片 & ESG 區塊排版 */
+    .service-img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .home-esg .esg-layout {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .home-esg .box {
+      flex: 1 1 260px;
+    }
+
+    .esg-image {
+      flex: 1 1 260px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .esg-image img {
+      max-width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    @media (max-width: 768px) {
+      .home-esg .esg-layout {
+        flex-direction: column;
+      }
+    }
   </style>
 </head>
 <body>
@@ -507,8 +545,10 @@
           currentRightIndex
         };
       },
+      
       template: `
         <div>
+          <!-- Hero 區：左邊主視覺 + 右邊圖片輪播 -->
           <section class="hero" :style="heroBackgroundStyle">
             <div class="hero-inner">
               <div class="hero-text">
@@ -532,7 +572,7 @@
                 </div>
               </div>
 
-              <!-- 右側：三張圖片輪播 -->
+              <!-- 右側：三張圖片輪播（page1~3） -->
               <div class="hero-image-placeholder">
                 <img
                   :src="rightImages[currentRightIndex]"
@@ -557,6 +597,7 @@
             </div>
           </section>
 
+          <!-- 快速總覽 -->
           <section>
             <h2 class="section-title">快速總覽</h2>
             <p class="section-subtitle">
@@ -565,6 +606,85 @@
             <div class="box">
               長榮航太科技提供完整的航機維修、改裝、零組件維修與工程技術服務，
               以飛安為最高原則，結合國際認證與多年航空維修經驗，持續提升機隊運作效率與可靠度。
+            </div>
+          </section>
+
+          <!-- 核心服務項目（三大卡片） -->
+          <section>
+            <h2 class="section-title">核心服務項目</h2>
+            <p class="section-subtitle">
+              以下為示意內容，可依實際業務調整服務名稱與說明。
+            </p>
+            <div class="card-grid">
+              <div class="card">
+                <img src="images/page1.jpg" alt="航機維修服務" class="service-img">
+                <div class="card-title">航機維修服務</div>
+                <div class="card-desc">
+                  提供機隊例行檢查、停機線維護與結構修理，確保飛航安全與準點。
+                </div>
+              </div>
+              <div class="card">
+                <img src="images/page2.jpg" alt="工程設計與改裝" class="service-img">
+                <div class="card-title">工程設計與改裝</div>
+                <div class="card-desc">
+                  結合工程設計與製造能力，執行客艙改裝、系統升級與專案型工程服務。
+                </div>
+              </div>
+              <div class="card">
+                <img src="images/page3.jpg" alt="零組件與航電維修" class="service-img">
+                <div class="card-title">零組件與航電維修</div>
+                <div class="card-desc">
+                  涵蓋航電與關鍵零組件維修，支援機隊可靠度與營運效率。
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 最新消息 -->
+          <section>
+            <h2 class="section-title">最新消息</h2>
+            <p class="section-subtitle">
+              以下為示意新聞卡片，實務上可連結至新聞或公告頁面。
+            </p>
+            <div class="card-grid">
+              <div class="card">
+                <div class="card-title">2025-01-15｜新型機隊維修能量啟用</div>
+                <div class="card-desc">
+                  公司完成新型客機維修設施與設備升級，提供更完整的機隊維護服務。
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-title">2024-12-30｜通過國際品質認證複審</div>
+                <div class="card-desc">
+                  通過多項國際航空維修品質與安全認證複審，展現持續精進之成果。
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-title">2024-11-10｜企業永續報告書發布</div>
+                <div class="card-desc">
+                  公布最新年度企業永續報告書，呈現 ESG 推動成果與未來目標。
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ESG 區塊：文字 + 圖片 -->
+          <section class="home-esg">
+            <h2 class="section-title">企業永續（ESG）</h2>
+            <p class="section-subtitle">
+              以安全、環保與社會責任為核心，持續推動永續發展。
+            </p>
+            <div class="esg-layout">
+              <div class="box">
+                <ul>
+                  <li>環境：導入節能設備、減少碳排與廢棄物產生。</li>
+                  <li>社會：重視員工職安衛、人才培育與社會關懷。</li>
+                  <li>治理：落實公司治理架構與風險管理機制。</li>
+                </ul>
+              </div>
+              <div class="esg-image">
+                <img src="images/hero3.jpg" alt="企業永續示意" />
+              </div>
             </div>
           </section>
         </div>
@@ -713,4 +833,3 @@
   </script>
 </body>
 </html>
-
