@@ -416,6 +416,26 @@
         flex-direction: column;
       }
     }
+
+    /* ESG 輪播 dots */
+    .esg-dots {
+      margin-top: 8px;
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+    }
+
+    .esg-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: rgba(0,0,0,0.3);
+      cursor: pointer;
+    }
+
+    .esg-dot.active {
+      background-color: #008f9c;
+    }
   </style>
 </head>
 <body>
@@ -569,6 +589,34 @@
         onMounted(startRightCarousel);
         onBeforeUnmount(stopRightCarousel);
 
+        // ESG 右側輪播（ESG1~3）
+        const esgImages = ref([
+          'images/ESG1.jpg',
+          'images/ESG2.jpg',
+          'images/ESG3.jpg'
+        ]);
+        const currentESG = ref(0);
+        let esgTimer = null;
+
+        const nextESG = () => {
+          currentESG.value = (currentESG.value + 1) % esgImages.value.length;
+        };
+
+        const startESGCarousel = () => {
+          if (esgTimer) return;
+          esgTimer = setInterval(nextESG, 4000);
+        };
+
+        const stopESGCarousel = () => {
+          if (esgTimer) {
+            clearInterval(esgTimer);
+            esgTimer = null;
+          }
+        };
+
+        onMounted(startESGCarousel);
+        onBeforeUnmount(stopESGCarousel);
+
         return {
           slides,
           currentSlideIndex,
@@ -576,7 +624,9 @@
           heroBackgroundStyle,
           goToSlide,
           rightImages,
-          currentRightIndex
+          currentRightIndex,
+          esgImages,
+          currentESG
         };
       },
       
@@ -702,7 +752,7 @@
             </div>
           </section>
 
-          <!-- ESG 區塊：文字 + 圖片 -->
+          <!-- ESG 區塊：文字 + 右側圖片輪播 -->
           <section class="home-esg">
             <h2 class="section-title">企業永續（ESG）</h2>
             <p class="section-subtitle">
@@ -717,8 +767,20 @@
                 </ul>
               </div>
               <div class="esg-image">
-                <img src="images/hero3.jpg" alt="企業永續示意" />
+                <img
+                  :src="esgImages[currentESG]"
+                  alt="企業永續示意"
+                />
               </div>
+            </div>
+            <div class="esg-dots">
+              <div
+                v-for="(img, idx) in esgImages"
+                :key="idx"
+                class="esg-dot"
+                :class="{ active: idx === currentESG }"
+                @click="currentESG = idx"
+              ></div>
             </div>
           </section>
         </div>
