@@ -2,9 +2,11 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
+  <title>EGATWEB</title>
+
+  <!-- favicon（如果你已有檔案就會顯示分頁小圖示） -->
   <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
-  <title>EGATWEB</title>
 
   <!-- Vue 3 & Vue Router 4（CDN） -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -40,6 +42,24 @@
 
     main {
       flex: 1;
+    }
+
+    /* 🔹 頂端天氣資訊列 */
+    .top-weather {
+      background-color: #00263c;
+      color: #fff;
+      font-size: 12px;
+    }
+
+    .top-weather-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 2px 16px;
+      text-align: left;
+      opacity: 0.9;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     /* Header / Nav */
@@ -359,7 +379,7 @@
       }
     }
 
-    /* 新增：服務卡片圖片 & ESG 區塊排版 */
+    /* 服務卡片圖片 & ESG 區塊排版 */
     .service-img {
       width: 100%;
       border-radius: 10px;
@@ -402,6 +422,18 @@
   <div id="app">
     <!-- 統一外框 -->
     <header>
+      <!-- 🔹 頂端天氣資訊列：TPE / NYC / TYO，每 10 分鐘更新 -->
+      <div class="top-weather">
+        <div class="top-weather-inner">
+          <span v-if="weatherLoaded">
+            TPE {{ temps.TPE }}°C ｜ NYC {{ temps.NYC }}°C ｜ TYO {{ temps.TYO }}°C
+          </span>
+          <span v-else>
+            載入天氣中…
+          </span>
+        </div>
+      </div>
+
       <div class="nav-container">
         <div class="logo-group">
           <img src="egat-logo.png" alt="EGAT Logo" class="logo-img">
@@ -819,14 +851,75 @@
       routes
     });
 
-    /* ----------- App ----------- */
+    /* ----------- App（含天氣）----------- */
     const app = createApp({
       setup() {
         const mobileNavOpen = ref(false);
+
+        // 🔹 天氣資料（TPE / NYC / TYO）
+        const temps = ref({
+          TPE: null,
+          NYC: null,
+          TYO: null
+        });
+        const weatherLoaded = ref(false);
+        let weatherTimer = null;
+
+        // 取得單一城市氣溫（攝氏，Open-Meteo 預設單位）
+        const fetchTemp = async (lat, lon) => {
+          const url =
+            `https://api.open-meteo.com/v1/forecast` +
+            `?latitude=${lat}&longitude=${lon}&current_weather=true`;
+          const res = await fetch(url);
+          if (!res.ok) {
+            throw new Error('Weather API error');
+          }
+          const data = await res.json();
+          return data.current_weather?.temperature;
+        };
+
+        const updateWeather = async () => {
+          try {
+            const [tpe, nyc, tyo] = await Promise.all([
+              // 台北 (TPE)
+              fetchTemp(25.05, 121.5),
+              // 紐約 (NYC)
+              fetchTemp(40.71, -74.01),
+              // 東京 (TYO)
+              fetchTemp(35.68, 139.69)
+            ]);
+
+            temps.value = {
+              TPE: Math.round(tpe),
+              NYC: Math.round(nyc),
+              TYO: Math.round(tyo)
+            };
+            weatherLoaded.value = true;
+          } catch (err) {
+            console.error('取得天氣失敗：', err);
+          }
+        };
+
+        onMounted(() => {
+          // 進站先抓一次
+          updateWeather();
+          // 每 10 分鐘自動更新一次
+          weatherTimer = setInterval(updateWeather, 10 * 60 * 1000);
+        });
+
+        onBeforeUnmount(() => {
+          if (weatherTimer) clearInterval(weatherTimer);
+        });
+
         router.afterEach(() => {
           mobileNavOpen.value = false;
         });
-        return { mobileNavOpen };
+
+        return {
+          mobileNavOpen,
+          temps,
+          weatherLoaded
+        };
       }
     });
 
@@ -835,4 +928,3 @@
   </script>
 </body>
 </html>
-
