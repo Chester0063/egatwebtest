@@ -479,6 +479,7 @@
         ]);
         const currentRightIndex = ref(0);
         let rightTimer = null;
+        const esgImage = 'images/ESG3.jpg';
 
         const nextRight = () => {
           currentRightIndex.value =
@@ -495,40 +496,14 @@
           }
         };
 
-        // ESG 右側輪播（ESG1~3）
-        const esgImages = ref([
-          'images/ESG1.jpg',
-          'images/ESG2.jpg',
-          'images/ESG3.jpg'
-        ]);
-        const currentESG = ref(0);
-        let esgTimer = null;
-
-        const nextESG = () => {
-          currentESG.value =
-            (currentESG.value + 1) % esgImages.value.length;
-        };
-        const startESGCarousel = () => {
-          if (esgTimer) return;
-          esgTimer = setInterval(nextESG, 4000);
-        };
-        const stopESGCarousel = () => {
-          if (esgTimer) {
-            clearInterval(esgTimer);
-            esgTimer = null;
-          }
-        };
-
         onMounted(() => {
           startHeroCarousel();
           startRightCarousel();
-          startESGCarousel();
         });
 
         onBeforeUnmount(() => {
           stopHeroCarousel();
           stopRightCarousel();
-          stopESGCarousel();
         });
 
         return {
@@ -679,7 +654,7 @@
                 </ul>
               </div>
               <div class="esg-image">
-                <img :src="esgImages[currentESG]" alt="企業永續示意" />
+                <img :src="esgImage" alt="企業永續示意" />
               </div>
             </div>
             <div class="esg-dots">
@@ -836,5 +811,6 @@
   </script>
 </body>
 </html>
+
 
 
