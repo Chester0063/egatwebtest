@@ -338,7 +338,7 @@
 
     .esg-image {
       flex: 1 1 260px;
-      /* height: 260px;  刪掉固定高度，讓容器跟著圖片長 */
+      height: 260px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -346,8 +346,8 @@
 
     .esg-image img {
       width: 100%;
-      height: auto;       /* 讓高度依比例自動縮放 */
-      object-fit: contain;/* 保留整張圖，必要時留白 */
+      height: 100%;
+      object-fit: cover;
       border-radius: 12px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
@@ -479,7 +479,6 @@
         ]);
         const currentRightIndex = ref(0);
         let rightTimer = null;
-        const esgImage = 'images/ESG3.jpg';
 
         const nextRight = () => {
           currentRightIndex.value =
@@ -496,14 +495,8 @@
           }
         };
 
-        onMounted(() => {
-          startHeroCarousel();
-          startRightCarousel();
-        });
-
-        onBeforeUnmount(() => {
-          stopHeroCarousel();
-          stopRightCarousel();
+        // Fixed ESG image
+const esgImage = 'images/ESG3.jpg';
         });
 
         return {
@@ -657,14 +650,7 @@
                 <img :src="esgImage" alt="企業永續示意" />
               </div>
             </div>
-            <div class="esg-dots">
-              <div
-                v-for="(img, idx) in esgImages"
-                :key="idx"
-                class="esg-dot"
-                :class="{ active: idx === currentESG }"
-                @click="currentESG = idx"
-              ></div>
+            
             </div>
           </section>
         </div>
@@ -811,6 +797,5 @@
   </script>
 </body>
 </html>
-
 
 
