@@ -53,6 +53,19 @@
       box-shadow: 0 3px 6px rgba(0,0,0,0.25);
     }
 
+    
+    .temp-bar {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 4px 16px 0;
+      font-size: 12px;
+      opacity: 0.9;
+    }
+    .temp-bar span + span {
+      margin-left: 8px;
+    }
+    
+
     .nav-container {
       max-width: 1080px;
       margin: 0 auto;
@@ -158,7 +171,6 @@
         font-size: 18px;
       }
     }
-
     /* === HERO 區背景、排版 === */
     .hero {
       position: relative;
@@ -339,6 +351,7 @@
 
     .esg-image {
       flex: 1 1 260px;
+      height: 260px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -346,17 +359,42 @@
 
     .esg-image img {
       width: 100%;
-      height: auto;
-      object-fit: contain;
+      height: 100%;
+      object-fit: cover;
       border-radius: 12px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .esg-dots {
+      margin-top: 8px;
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+    }
+
+    .esg-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: rgba(0,0,0,0.3);
+      cursor: pointer;
+    }
+
+    .esg-dot.active {
+      background-color: #008f9c;
     }
   </style>
 </head>
 <body>
   <div id="app">
 
+    <!-- Header（第 1 段已結束）這裡接續 -->
     <header>
+      <div class="temp-bar">
+        <span>TPE {{ temps.TPE }}°C</span>
+        <span>｜NYC {{ temps.NYC }}°C</span>
+        <span>｜TYO {{ temps.TYO }}°C</span>
+      </div>
       <div class="nav-container">
         <div class="logo-group">
           <img src="egat-logo.png" class="logo-img" alt="EGAT Logo">
@@ -380,8 +418,7 @@
     <main>
       <router-view></router-view>
     </main>
-
-    <footer style="background:#222;color:#eee;padding:16px 0;font-size:13px;">
+        <footer style="background:#222;color:#eee;padding:16px 0;font-size:13px;">
       <div style="max-width:1080px;margin:0 auto;padding:0 16px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;">
         <div>
           <div>長榮航太科技股份有限公司（範例文字）</div>
@@ -476,17 +513,8 @@
           }
         };
 
-        // ⭐ 固定 ESG 圖片（不再輪播）
-        const esgImage = 'images/ESG3.jpg';
-
-        onMounted(() => {
-          startHeroCarousel();
-          startRightCarousel();
-        });
-
-        onBeforeUnmount(() => {
-          stopHeroCarousel();
-          stopRightCarousel();
+        // Fixed ESG image
+const esgImage = 'images/ESG3.jpg';
         });
 
         return {
@@ -497,7 +525,8 @@
           goToSlide,
           rightImages,
           currentRightIndex,
-          esgImage
+          esgImages,
+          currentESG
         };
       },
       template: `
@@ -621,7 +650,7 @@
             </div>
           </section>
 
-          <!-- ESG 區塊：文字 + 一張固定圖片 -->
+          <!-- ESG 區塊：文字 + 右側圖片輪播 -->
           <section class="home-esg">
             <h2 class="section-title">企業永續（ESG）</h2>
             <p class="section-subtitle">
@@ -638,6 +667,8 @@
               <div class="esg-image">
                 <img :src="esgImage" alt="企業永續示意" />
               </div>
+            </div>
+            
             </div>
           </section>
         </div>
@@ -769,18 +800,27 @@
       routes
     });
 
-    const app = createApp({
-      setup() {
-        const mobileNavOpen = ref(false);
-        router.afterEach(() => {
-          mobileNavOpen.value = false;
-        });
-        return { mobileNavOpen };
-      }
+    
+const app = createApp({
+  setup() {
+    const mobileNavOpen = ref(false);
+    const temps = ref({
+      TPE: 28,
+      NYC: 16,
+      TYO: 22
     });
+    router.afterEach(() => {
+      mobileNavOpen.value = false;
+    });
+    return { mobileNavOpen, temps };
+  }
+});
+
 
     app.use(router);
     app.mount('#app');
   </script>
 </body>
 </html>
+
+
