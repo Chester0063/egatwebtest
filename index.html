@@ -4,11 +4,9 @@
   <meta charset="UTF-8" />
   <title>EGATWEB</title>
 
-  <!-- favicon -->
   <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
 
-  <!-- Vue 3 & Vue Router 4（CDN） -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script src="https://unpkg.com/vue-router@4"></script>
 
@@ -404,13 +402,11 @@
       </div>
     </footer>
 
-  </div> <!-- #app 結束 -->
-
-  <script>
+  </div> <script>
     const { createApp, ref, computed, onMounted, onBeforeUnmount } = Vue;
     const { createRouter, createWebHashHistory } = VueRouter;
 
-    /* ===== 首頁元件 ===== */
+    /* ===== 首頁元件 (HomePage) ===== */
     const HomePage = {
       name: 'HomePage',
       setup() {
@@ -435,7 +431,6 @@
             image: 'images/hero3.jpg'
           }
         ]);
-
         const currentSlideIndex = ref(0);
         let heroTimer = null;
 
@@ -445,7 +440,6 @@
         const heroBackgroundStyle = computed(() => ({
           backgroundImage: `url('${currentSlide.value.image}')`
         }));
-
         const nextSlide = () => {
           currentSlideIndex.value =
             (currentSlideIndex.value + 1) % slides.value.length;
@@ -453,7 +447,6 @@
         const goToSlide = (idx) => {
           currentSlideIndex.value = idx;
         };
-
         const startHeroCarousel = () => {
           if (heroTimer) return;
           heroTimer = setInterval(nextSlide, 6000);
@@ -496,7 +489,6 @@
           startHeroCarousel();
           startRightCarousel();
         });
-
         onBeforeUnmount(() => {
           stopHeroCarousel();
           stopRightCarousel();
@@ -515,7 +507,6 @@
       },
       template: `
         <div>
-          <!-- Hero 區：左邊主視覺 + 右邊圖片輪播 -->
           <section class="hero" :style="heroBackgroundStyle">
             <div class="hero-inner">
               <div class="hero-text">
@@ -539,7 +530,6 @@
                 </div>
               </div>
 
-              <!-- 右側：三張圖片輪播（page1~3） -->
               <div class="hero-image-placeholder">
                 <img
                   :src="rightImages[currentRightIndex]"
@@ -563,7 +553,6 @@
             </div>
           </section>
 
-          <!-- 快速總覽 -->
           <section>
             <h2 class="section-title">快速總覽</h2>
             <p class="section-subtitle">
@@ -575,10 +564,10 @@
             </div>
           </section>
 
-          <!-- 核心服務項目（三大卡片） -->
           <section>
             <h2 class="section-title">核心服務項目</h2>
-            <p class="section-subtitle">
+            <p 
+              class="section-subtitle">
               以下為示意內容，可依實際業務調整服務名稱與說明。
             </p>
             <div class="card-grid">
@@ -606,7 +595,6 @@
             </div>
           </section>
 
-          <!-- 最新消息 -->
           <section>
             <h2 class="section-title">最新消息</h2>
             <p class="section-subtitle">
@@ -634,7 +622,6 @@
             </div>
           </section>
 
-          <!-- ESG 區塊：文字 + 一張固定圖片 -->
           <section class="home-esg">
             <h2 class="section-title">企業永續（ESG）</h2>
             <p class="section-subtitle">
@@ -657,22 +644,56 @@
       `
     };
 
-    /* ===== 其他頁面 ===== */
+    /* ===== 其他頁面元件定義 (已更新 AboutPage) ===== */
     const AboutPage = {
       template: `
         <section>
           <h2 class="section-title">公司簡介</h2>
           <p class="section-subtitle">
-            介紹公司沿革、核心能力與經營理念，可依實際官網內容調整文字。
+            介紹公司沿革、核心能力與經營理念。
           </p>
-          <div class="box">
+          
+          <img src="images/EVA1.jpg" alt="長榮航太飛機照片" 
+               style="width: 100%; max-width: 800px; height: auto; 
+                      border-radius: 8px; margin: 0 auto 20px; 
+                      display: block; box-shadow: 0 4px 10px rgba(0,0,0,0.15);"
+          >
+          
+          <div class="box" style="margin-bottom: 30px;">
             長榮航太科技承襲航空集團技術資源與維修能量，提供客戶機隊維修、改裝與零組件維修等整體解決方案。
             公司以「安全、品質、效率」為核心價值，持續優化維修流程，引進創新科技，並與國際主要航空與航太產業夥伴維持緊密合作。
           </div>
+
+          <h2 class="section-title">歷史沿革</h2>
+          <p class="section-subtitle">
+            公司重要里程碑（資料參考公開資訊）。
+          </p>
+          <div class="box">
+            <ul style="list-style: none; padding-left: 0;">
+              <li style="margin-bottom: 12px; border-left: 3px solid #008f9c; padding-left: 10px;">
+                <strong style="color: #003c5c;">1997年11月10日：</strong> 長榮航太科技股份有限公司正式成立。
+              </li>
+              <li style="margin-bottom: 12px; border-left: 3px solid #008f9c; padding-left: 10px;">
+                <strong style="color: #003c5c;">1998年9月1日：</strong> 由長榮航空機務本部改制而成，並與美國奇異公司（GE）簽約合作。
+              </li>
+              <li style="margin-bottom: 12px; border-left: 3px solid #008f9c; padding-left: 10px;">
+                <strong style="color: #003c5c;">2003年7月：</strong> 發動機修護工廠落成啟用。
+              </li>
+              <li style="margin-bottom: 12px; border-left: 3px solid #008f9c; padding-left: 10px;">
+                <strong style="color: #003c5c;">2005年2月：</strong> 與波音簽署波音 747-400 LCF 改裝合約。
+              </li>
+              <li style="margin-bottom: 12px; border-left: 3px solid #008f9c; padding-left: 10px;">
+                <strong style="color: #003c5c;">2009年：</strong> 獲美國《航空週刊》評選為亞太地區最佳獨立維修廠。
+              </li>
+              <li style="margin-bottom: 12px; border-left: 3px solid #008f9c; padding-left: 10px;">
+                <strong style="color: #003c5c;">2019年3月：</strong> 併入長榮航宇精密，重新整合航機維修與製造資源。
+              </li>
+            </ul>
+          </div>
         </section>
       `
-    };
-
+    }; 
+    
     const ServicesPage = {
       data() {
         return {
@@ -711,7 +732,7 @@
         </section>
       `
     };
-
+    
     const GovernancePage = {
       template: `
         <section>
@@ -729,7 +750,7 @@
         </section>
       `
     };
-
+    
     const InvestorPage = {
       template: `
         <section>
@@ -747,7 +768,7 @@
         </section>
       `
     };
-
+    
     const ESGPage = {
       template: `
         <section>
