@@ -647,48 +647,54 @@
     /* ===== 其他頁面元件定義 (已更新 AboutPage) ===== */
     const AboutPage = {
       template: `
-        <section>
-          <h2 class="section-title">公司簡介</h2>
-          <p class="section-subtitle">
-            介紹公司沿革、核心能力與經營理念。
-          </p>
+        <section 
+          style="background-image: url('images/EVA1.jpg'); 
+                 background-size: cover; 
+                 background-position: center; 
+                 background-attachment: fixed; 
+                 padding: 40px 16px; 
+                 position: relative;"
+        >
+          <div style="position: absolute; inset: 0; background-color: rgba(255, 255, 255, 0.6); z-index: 0;"></div>
           
-          <img src="images/EVA1.jpg" alt="長榮航太飛機照片" 
-               style="width: 100%; max-width: 800px; height: auto; 
-                      border-radius: 8px; margin: 0 auto 20px; 
-                      display: block; box-shadow: 0 4px 10px rgba(0,0,0,0.15);"
-          >
-          
-          <div class="box" style="margin-bottom: 30px;">
-            長榮航太科技承襲航空集團技術資源與維修能量，提供客戶機隊維修、改裝與零組件維修等整體解決方案。
-            公司以「安全、品質、效率」為核心價值，持續優化維修流程，引進創新科技，並與國際主要航空與航太產業夥伴維持緊密合作。
-          </div>
+          <div style="position: relative; z-index: 1; max-width: 1080px; margin: 0 auto;">
+            
+            <h2 class="section-title">公司簡介</h2>
+            <p class="section-subtitle">
+              介紹公司沿革、核心能力與經營理念。
+            </p>
+            
+            <div class="box" style="margin-bottom: 30px; background-color: rgba(255, 255, 255, 0.9);">
+              長榮航太科技承襲航空集團技術資源與維修能量，提供客戶機隊維修、改裝與零組件維修等整體解決方案。
+              公司以「安全、品質、效率」為核心價值，持續優化維修流程，引進創新科技，並與國際主要航空與航太產業夥伴維持緊密合作。
+            </div>
 
-          <h2 class="section-title">歷史沿革</h2>
-          <p class="section-subtitle">
-            公司重要里程碑（資料參考公開資訊）。
-          </p>
-          <div class="box">
-            <ul style="list-style: none; padding-left: 0;">
-              <li style="margin-bottom: 12px; border-left: 3px solid #008f9c; padding-left: 10px;">
-                <strong style="color: #003c5c;">1997年11月10日：</strong> 長榮航太科技股份有限公司正式成立。
-              </li>
-              <li style="margin-bottom: 12px; border-left: 3px solid #008f9c; padding-left: 10px;">
-                <strong style="color: #003c5c;">1998年9月1日：</strong> 由長榮航空機務本部改制而成，並與美國奇異公司（GE）簽約合作。
-              </li>
-              <li style="margin-bottom: 12px; border-left: 3px solid #008f9c; padding-left: 10px;">
-                <strong style="color: #003c5c;">2003年7月：</strong> 發動機修護工廠落成啟用。
-              </li>
-              <li style="margin-bottom: 12px; border-left: 3px solid #008f9c; padding-left: 10px;">
-                <strong style="color: #003c5c;">2005年2月：</strong> 與波音簽署波音 747-400 LCF 改裝合約。
-              </li>
-              <li style="margin-bottom: 12px; border-left: 3px solid #008f9c; padding-left: 10px;">
-                <strong style="color: #003c5c;">2009年：</strong> 獲美國《航空週刊》評選為亞太地區最佳獨立維修廠。
-              </li>
-              <li style="margin-bottom: 12px; border-left: 3px solid #008f9c; padding-left: 10px;">
-                <strong style="color: #003c5c;">2019年3月：</strong> 併入長榮航宇精密，重新整合航機維修與製造資源。
-              </li>
-            </ul>
+            <h2 class="section-title">歷史沿革</h2>
+            <p class="section-subtitle">
+              公司重要里程碑（資料參考公開資訊）。
+            </p>
+            <div class="box" style="background-color: rgba(255, 255, 255, 0.9);">
+              <ul style="list-style: none; padding-left: 0;">
+                <li style="margin-bottom: 12px; border-left: 3px solid #008f9c; padding-left: 10px;">
+                  <strong style="color: #003c5c;">1997年11月10日：</strong> 長榮航太科技股份有限公司正式成立。
+                </li>
+                <li style="margin-bottom: 12px; border-left: 3px solid #008f9c; padding-left: 10px;">
+                  <strong style="color: #003c5c;">1998年9月1日：</strong> 由長榮航空機務本部改制而成，並與美國奇異公司（GE）簽約合作。
+                </li>
+                <li style="margin-bottom: 12px; border-left: 3px solid #008f9c; padding-left: 10px;">
+                  <strong style="color: #003c5c;">2003年7月：</strong> 發動機修護工廠落成啟用。
+                </li>
+                <li style="margin-bottom: 12px; border-left: 3px solid #008f9c; padding-left: 10px;">
+                  <strong style="color: #003c5c;">2005年2月：</strong> 與波音簽署波音 747-400 LCF 改裝合約。
+                </li>
+                <li style="margin-bottom: 12px; border-left: 3px solid #008f9c; padding-left: 10px;">
+                  <strong style="color: #003c5c;">2009年：</strong> 獲美國《航空週刊》評選為亞太地區最佳獨立維修廠。
+                </li>
+                <li style="margin-bottom: 12px; border-left: 3px solid #008f9c; padding-left: 10px;">
+                  <strong style="color: #003c5c;">2019年3月：</strong> 併入長榮航宇精密，重新整合航機維修與製造資源。
+                </li>
+              </ul>
+            </div>
           </div>
         </section>
       `
