@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <title>EGATWEB</title>
+  <title>EGATWEB - 長榮航太</title>
 
   <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
@@ -10,9 +10,21 @@
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script src="https://unpkg.com/vue-router@4"></script>
 
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <style>
+    /* === 全域變數定義 (方便統一修改顏色) === */
+    :root {
+      --primary-color: #00703c; /* 長榮綠 */
+      --secondary-color: #008f9c; /* 輔助藍綠 */
+      --accent-color: #ffd153; /* 亮黃色 (按鈕/強調) */
+      --text-main: #333333;
+      --text-light: #666666;
+      --bg-light: #f9f9f9;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -20,15 +32,16 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacMacSystemFont, "Segoe UI", Arial, "Microsoft JhengHei", sans-serif;
-      background-color: #f5f5f5;
-      color: #222;
+      font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background-color: var(--bg-light);
+      color: var(--text-main);
       line-height: 1.6;
     }
 
     a {
       text-decoration: none;
       color: inherit;
+      transition: color 0.3s;
     }
 
     #app {
@@ -37,326 +50,343 @@
       flex-direction: column;
     }
 
-    main {
-      flex: 1;
-    }
-
-    /* === Header === */
+    /* === Header (改為白底風格) === */
     header {
-      background: linear-gradient(90deg, #00243A 0%, #003A5A 40%, #004B73 100%);
-      color: #fff;
+      background: #ffffff;
       position: sticky;
       top: 0;
-      z-index: 10;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.25);
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      border-top: 4px solid var(--primary-color); /* 頂部綠色線條 */
     }
 
+    /* 天氣列 */
     .temp-bar {
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 4px 16px 0;
+      background-color: #f0f0f0;
+      color: #666;
+      padding: 6px 0;
       font-size: 12px;
-      opacity: 0.9;
+      text-align: right;
+    }
+    .temp-bar-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
     }
     .temp-bar span + span {
-      margin-left: 8px;
+      margin-left: 15px;
+      padding-left: 15px;
+      border-left: 1px solid #ccc;
     }
 
+    /* 導覽列容器 */
     .nav-container {
-      max-width: 1080px;
+      max-width: 1200px;
       margin: 0 auto;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 16px 14px;
+      padding: 15px 20px;
+      height: 80px;
     }
 
     /* === Logo === */
     .logo-group {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
     }
 
     .logo-img {
-      height: 38px;
+      height: 45px;
       width: auto;
-      background: #fff;
-      padding: 4px;
-      border-radius: 6px;
-      box-shadow: 0 0 6px rgba(0,0,0,0.25);
     }
 
     .logo-text {
-      font-size: 22px;
+      font-size: 24px;
       font-weight: 700;
+      color: var(--primary-color);
       letter-spacing: 1px;
-      color: #ffffff;
-      white-space: nowrap;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.35);
     }
 
+    /* === 選單連結 === */
     .nav-links {
       display: flex;
-      gap: 20px;
-      font-size: 15px;
+      gap: 30px;
+      font-size: 16px;
       align-items: center;
     }
 
     .nav-links a {
-      opacity: 0.9;
-      cursor: pointer;
-      padding-bottom: 3px;
+      color: var(--text-main);
+      font-weight: 500;
+      position: relative;
+      padding: 5px 0;
     }
 
+    /* 連結 Hover 與 Active 效果 */
+    .nav-links a:hover,
     .nav-links a.router-link-active {
-      opacity: 1;
-      font-weight: 700;
-      border-bottom: 2px solid #ffd153;
+      color: var(--primary-color);
     }
 
-    .nav-links a:hover {
-      opacity: 1;
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: 0;
+      left: 0;
+      background-color: var(--primary-color);
+      transition: width 0.3s;
     }
 
+    .nav-links a:hover::after,
+    .nav-links a.router-link-active::after {
+      width: 100%;
+    }
+
+    /* === 手機版漢堡選單 === */
     .nav-toggle {
       display: none;
       cursor: pointer;
       font-size: 26px;
-      user-select: none;
+      color: var(--primary-color);
     }
 
     @media (max-width: 768px) {
-      .nav-container {
-        flex-wrap: wrap;
-        gap: 8px;
-      }
-
-      .nav-links {
-        width: 100%;
-        justify-content: flex-start;
-        flex-wrap: wrap;
-        gap: 12px;
-        font-size: 14px;
-      }
-    }
-
-    @media (max-width: 600px) {
       .nav-toggle {
         display: block;
       }
-
       .nav-links {
-        display: none;
+        display: none; /* 預設隱藏 */
+        position: absolute;
+        top: 100%; /* 接在 header 下方 */
+        left: 0;
+        width: 100%;
+        background-color: #fff;
         flex-direction: column;
         align-items: flex-start;
-        width: 100%;
+        padding: 20px;
+        box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+        border-top: 1px solid #eee;
       }
-
       .nav-links.open {
         display: flex;
       }
-
-      .logo-img {
-        height: 32px;
-        padding: 3px;
-      }
-
-      .logo-text {
-        font-size: 18px;
+      .nav-links a {
+        width: 100%;
+        padding: 10px 0;
+        border-bottom: 1px solid #f5f5f5;
       }
     }
 
-    /* === HERO === */
+    /* === 主內容區 === */
+    main {
+      flex: 1;
+      width: 100%;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    /* === HERO (主視覺) === */
     .hero {
       position: relative;
       color: #fff;
-      padding: 60px 16px 50px;
+      padding: 80px 20px;
       background-size: cover;
       background-position: center;
-      background-repeat: no-repeat;
-      overflow: hidden;
+      transition: background-image 0.5s ease-in-out;
     }
 
+    /* 遮罩層：讓文字更清楚 */
     .hero::before {
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(120deg, rgba(2, 91, 137, 0.88), rgba(0, 143, 156, 0.65));
+      background: linear-gradient(90deg, rgba(0, 36, 58, 0.9) 0%, rgba(0, 58, 90, 0.6) 100%);
       z-index: 0;
     }
 
     .hero-inner {
       position: relative;
       z-index: 1;
-      max-width: 1080px;
+      max-width: 1200px;
       margin: 0 auto;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 24px;
+      gap: 40px;
     }
 
     .hero-text {
-      flex: 1 1 280px;
+      flex: 1 1 400px;
     }
 
     .hero-title {
-      font-size: 32px;
-      margin-bottom: 12px;
+      font-size: 42px;
+      margin-bottom: 16px;
       font-weight: 700;
+      line-height: 1.2;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
 
     .hero-subtitle {
-      font-size: 16px;
-      opacity: 0.95;
-      margin-bottom: 20px;
+      font-size: 18px;
+      opacity: 0.9;
+      margin-bottom: 30px;
+      line-height: 1.6;
     }
 
     .hero-btn {
       display: inline-block;
-      padding: 10px 22px;
-      background-color: #ffd153;
-      color: #003c5c;
-      font-weight: 600;
-      border-radius: 999px;
-      font-size: 14px;
-      margin-bottom: 10px;
+      padding: 12px 30px;
+      background-color: var(--accent-color);
+      color: #00243a;
+      font-weight: 700;
+      border-radius: 4px;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+    .hero-btn:hover {
+      background-color: #ffde8a;
+      transform: translateY(-2px);
     }
 
-    .hero-tag {
-      font-size: 12px;
-      opacity: 0.85;
-    }
-
-    .hero-slide-info {
-      margin-top: 10px;
-      font-size: 13px;
-      opacity: 0.9;
-    }
-
-    .hero-dots {
-      margin-top: 14px;
-      display: flex;
-      gap: 8px;
-    }
-
-    .hero-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background-color: rgba(255, 255, 255, 0.4);
-      cursor: pointer;
-    }
-
-    .hero-dot.active {
-      background-color: #ffd153;
-    }
-
+    /* Hero 右側圖片區 */
     .hero-image-placeholder {
-      flex: 1 1 260px;
-      height: 260px;
-      min-height: 260px;
-      border-radius: 16px;
-      background: rgba(255, 255, 255, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 10px;
-      backdrop-filter: blur(2px);
+      flex: 1 1 300px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(5px);
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.2);
     }
-
     .hero-image-placeholder img {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 12px;
+      border-radius: 8px;
       display: block;
     }
 
-    main {
-      max-width: 1080px;
-      margin: 24px auto 40px;
-      padding: 0 16px;
-      width: 100%;
-    }
-
-    section {
-      margin-bottom: 40px;
-    }
-
+    /* === 通用標題樣式 === */
     .section-title {
-      font-size: 22px;
-      border-left: 4px solid #008f9c;
-      padding-left: 10px;
-      margin-bottom: 12px;
-      font-weight: 600;
+      font-size: 28px;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+      font-weight: 700;
+      position: relative;
+      display: inline-block;
+    }
+    /* 標題下方的裝飾線 */
+    .section-title::after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 4px;
+      background-color: var(--accent-color);
+      margin-top: 8px;
     }
 
     .section-subtitle {
-      font-size: 14px;
-      color: #555;
-      margin-bottom: 16px;
+      font-size: 16px;
+      color: var(--text-light);
+      margin-bottom: 30px;
     }
 
+    section {
+      margin-bottom: 60px;
+    }
+
+    /* === 卡片樣式 (Box & Cards) === */
     .box {
       background-color: #fff;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-      font-size: 14px;
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      border-left: 5px solid var(--primary-color);
     }
 
     .card-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
     }
 
     .card {
       background-color: #fff;
-      border-radius: 12px;
-      padding: 18px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      transition: transform 0.3s, box-shadow 0.3s;
+      border: 1px solid #eee;
+    }
+    
+    /* 卡片懸停效果 */
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
     }
 
     .card-title {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: #003c5c;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--primary-color);
+    }
+
+    .card-desc {
+      font-size: 15px;
+      color: #555;
     }
 
     .service-img {
       width: 100%;
-      border-radius: 12px;
-      margin-bottom: 10px;
-      display: block;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 15px;
     }
 
-    /* ESG 區塊 */
-    .home-esg .esg-layout {
+    /* === ESG 區塊 === */
+    .esg-layout {
       display: flex;
       flex-wrap: wrap;
-      gap: 16px;
+      gap: 30px;
+      align-items: flex-start;
     }
-
-    .esg-image {
-      flex: 1 1 260px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+    .esg-content { flex: 2; }
+    .esg-image { 
+      flex: 1; 
+      min-width: 250px;
     }
-
     .esg-image img {
       width: 100%;
-      height: auto;
-      object-fit: contain;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
+
+    /* === Footer === */
+    footer {
+      background-color: #222;
+      color: #bbb;
+      padding: 40px 0;
+      font-size: 14px;
+      margin-top: auto;
+    }
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .footer-info div { margin-bottom: 8px; }
+
   </style>
 </head>
 <body>
@@ -364,18 +394,20 @@
 
     <header>
       <div class="temp-bar">
-        <span>TPE {{ temps.TPE }}°C</span>
-        <span>｜NYC {{ temps.NYC }}°C</span>
-        <span>｜TYO {{ temps.TYO }}°C</span>
-      </div>
-      <div class="nav-container">
-        <div class="logo-group">
-          <img src="egat-logo.png" class="logo-img" alt="EGAT Logo">
-          <div class="logo-text">EGAT</div>
+        <div class="temp-bar-inner">
+            <span>TPE {{ temps.TPE }}°C</span>
+            <span>NYC {{ temps.NYC }}°C</span>
+            <span>TYO {{ temps.TYO }}°C</span>
         </div>
+      </div>
+      
+      <div class="nav-container">
+        <router-link to="/" class="logo-group">
+          <img src="egat-logo.png" class="logo-img" alt="EGAT Logo">
+          <div class="logo-text">EGAT 長榮航太</div>
+        </router-link>
 
-        <div class="nav-toggle"
-             @click="mobileNavOpen = !mobileNavOpen">☰</div>
+        <div class="nav-toggle" @click="mobileNavOpen = !mobileNavOpen">☰</div>
 
         <nav :class="['nav-links', { open: mobileNavOpen }]">
           <router-link to="/">首頁</router-link>
@@ -392,17 +424,22 @@
       <router-view></router-view>
     </main>
 
-    <footer style="background:#222;color:#eee;padding:16px 0;font-size:13px;">
-      <div style="max-width:1080px;margin:0 auto;padding:0 16px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;">
-        <div>
-          <div>長榮航太科技股份有限公司（範例文字）</div>
-          <div>桃園市大園區桃園國際機場航站南路 6 號　｜　Tel: +886 (3) 351 9500</div>
+    <footer>
+      <div class="footer-content">
+        <div class="footer-info">
+          <div style="color: #fff; font-size: 16px; margin-bottom: 10px;">長榮航太科技股份有限公司</div>
+          <div>桃園市大園區桃園國際機場航站南路 6 號</div>
+          <div>Tel: +886 (3) 351 9500</div>
         </div>
-        <div>Copyright © EGAT Demo</div>
+        <div class="copyright">
+          Copyright © EGAT Demo. All Rights Reserved.
+        </div>
       </div>
     </footer>
 
-  </div> <script>
+  </div> 
+
+  <script>
     const { createApp, ref, computed, onMounted, onBeforeUnmount } = Vue;
     const { createRouter, createWebHashHistory } = VueRouter;
 
@@ -410,99 +447,69 @@
     const HomePage = {
       name: 'HomePage',
       setup() {
-        // 左側 Hero 背景輪播
         const slides = ref([
           {
-            title: '攜手守護每一段飛行旅程',
+            title: '卓越技術 飛航安全',
             subtitle: '以專業維修實力與嚴謹品質管理，為全球航空夥伴提供可靠的飛機維修與改裝服務。',
-            tagline: '超過 20 年民航機維修經驗｜國際認證維修站示意',
+            tagline: 'MRO Service Provider',
             image: 'images/hero1.jpg'
           },
           {
             title: '整合工程與製造能量',
             subtitle: '從設計、製造到維修支持，提供一站式航空工程技術服務。',
-            tagline: '工程設計｜客製化改裝｜結構分析',
+            tagline: 'Engineering & Manufacturing',
             image: 'images/hero2.jpg'
           },
           {
             title: '以永續思維打造安全天空',
             subtitle: '結合節能技術與綠色維修觀念，實踐企業永續責任。',
-            tagline: '減碳、節能、循環經濟導入維修流程',
+            tagline: 'Sustainable Aviation',
             image: 'images/hero3.jpg'
           }
         ]);
         const currentSlideIndex = ref(0);
         let heroTimer = null;
 
-        const currentSlide = computed(
-          () => slides.value[currentSlideIndex.value]
-        );
+        const currentSlide = computed(() => slides.value[currentSlideIndex.value]);
+        
+        // 背景圖片樣式
         const heroBackgroundStyle = computed(() => ({
           backgroundImage: `url('${currentSlide.value.image}')`
         }));
+
         const nextSlide = () => {
-          currentSlideIndex.value =
-            (currentSlideIndex.value + 1) % slides.value.length;
+          currentSlideIndex.value = (currentSlideIndex.value + 1) % slides.value.length;
         };
-        const goToSlide = (idx) => {
-          currentSlideIndex.value = idx;
-        };
+        
+        const goToSlide = (idx) => { currentSlideIndex.value = idx; };
+
         const startHeroCarousel = () => {
-          if (heroTimer) return;
-          heroTimer = setInterval(nextSlide, 6000);
+            if (!heroTimer) heroTimer = setInterval(nextSlide, 6000);
         };
         const stopHeroCarousel = () => {
-          if (heroTimer) {
-            clearInterval(heroTimer);
-            heroTimer = null;
-          }
+            if (heroTimer) { clearInterval(heroTimer); heroTimer = null; }
         };
 
-        // 右側框框圖片輪播（page1~3）
-        const rightImages = ref([
-          'images/page1.jpg',
-          'images/page2.jpg',
-          'images/page3.jpg'
-        ]);
+        // 右側小圖輪播
+        const rightImages = ref(['images/page1.jpg', 'images/page2.jpg', 'images/page3.jpg']);
         const currentRightIndex = ref(0);
         let rightTimer = null;
 
-        const nextRight = () => {
-          currentRightIndex.value =
-            (currentRightIndex.value + 1) % rightImages.value.length;
-        };
-        const startRightCarousel = () => {
-          if (rightTimer) return;
-          rightTimer = setInterval(nextRight, 4000);
-        };
-        const stopRightCarousel = () => {
-          if (rightTimer) {
-            clearInterval(rightTimer);
-            rightTimer = null;
-          }
-        };
-
-        // 固定 ESG 圖片
-        const esgImage = 'images/ESG3.jpg';
-
         onMounted(() => {
           startHeroCarousel();
-          startRightCarousel();
+          rightTimer = setInterval(() => {
+            currentRightIndex.value = (currentRightIndex.value + 1) % rightImages.value.length;
+          }, 4000);
         });
+
         onBeforeUnmount(() => {
           stopHeroCarousel();
-          stopRightCarousel();
+          if(rightTimer) clearInterval(rightTimer);
         });
 
         return {
-          slides,
-          currentSlideIndex,
-          currentSlide,
-          heroBackgroundStyle,
-          goToSlide,
-          rightImages,
-          currentRightIndex,
-          esgImage
+          slides, currentSlideIndex, currentSlide, heroBackgroundStyle, goToSlide,
+          rightImages, currentRightIndex
         };
       },
       template: `
@@ -512,288 +519,122 @@
               <div class="hero-text">
                 <div class="hero-title">{{ currentSlide.title }}</div>
                 <div class="hero-subtitle">{{ currentSlide.subtitle }}</div>
-                <router-link class="hero-btn" to="/about">
-                  了解公司簡介
-                </router-link>
-                <div class="hero-tag">{{ currentSlide.tagline }}</div>
-                <div class="hero-slide-info">
-                  第 {{ currentSlideIndex + 1 }} / {{ slides.length }} 張主視覺
-                </div>
-                <div class="hero-dots">
-                  <div
-                    v-for="(s, idx) in slides"
-                    :key="idx"
-                    class="hero-dot"
-                    :class="{ active: idx === currentSlideIndex }"
-                    @click="goToSlide(idx)"
-                  ></div>
+                <router-link class="hero-btn" to="/about">了解更多</router-link>
+                
+                <div style="margin-top: 30px; display: flex; gap: 10px;">
+                    <span v-for="(s, idx) in slides" :key="idx" 
+                          @click="goToSlide(idx)"
+                          :style="{
+                              width: '12px', height: '12px', borderRadius: '50%', cursor: 'pointer',
+                              background: idx === currentSlideIndex ? '#ffd153' : 'rgba(255,255,255,0.5)'
+                          }">
+                    </span>
                 </div>
               </div>
 
               <div class="hero-image-placeholder">
-                <img
-                  :src="rightImages[currentRightIndex]"
-                  alt="示意圖片"
-                >
-                <div style="margin-top:8px; display:flex; gap:6px;">
-                  <div
-                    v-for="(img, idx) in rightImages"
-                    :key="idx"
-                    @click="currentRightIndex = idx"
-                    :style="{
-                      width: '8px',
-                      height: '8px',
-                      borderRadius: '50%',
-                      backgroundColor: idx === currentRightIndex ? '#ffd153' : 'rgba(255,255,255,0.4)',
-                      cursor: 'pointer'
-                    }"
-                  ></div>
-                </div>
+                <img :src="rightImages[currentRightIndex]" alt="Display">
               </div>
             </div>
           </section>
 
-          <section>
-            <h2 class="section-title">快速總覽</h2>
-            <p class="section-subtitle">
-              以下為公司簡介與主要服務的摘要，詳細內容可透過上方導覽列進一步瀏覽各頁面。
-            </p>
-            <div class="box">
-              長榮航太科技提供完整的航機維修、改裝、零組件維修與工程技術服務，
-              以飛安為最高原則，結合國際認證與多年航空維修經驗，持續提升機隊運作效率與可靠度。
-            </div>
-          </section>
-
-          <section>
-            <h2 class="section-title">核心服務項目</h2>
-            <p 
-              class="section-subtitle">
-              以下為示意內容，可依實際業務調整服務名稱與說明。
-            </p>
-            <div class="card-grid">
-              <div class="card">
-                <img src="images/page1.jpg" alt="航機維修服務" class="service-img">
-                <div class="card-title">航機維修服務</div>
-                <div class="card-desc">
-                  提供機隊例行檢查、停機線維護與結構修理，確保飛航安全與準點。
-                </div>
-              </div>
-              <div class="card">
-                <img src="images/page2.jpg" alt="工程設計與改裝" class="service-img">
-                <div class="card-title">工程設計與改裝</div>
-                <div class="card-desc">
-                  結合工程設計與製造能力，執行客艙改裝、系統升級與專案型工程服務。
-                </div>
-              </div>
-              <div class="card">
-                <img src="images/page3.jpg" alt="零組件與航電維修" class="service-img">
-                <div class="card-title">零組件與航電維修</div>
-                <div class="card-desc">
-                  涵蓋航電與關鍵零組件維修，支援機隊可靠度與營運效率。
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section>
-            <h2 class="section-title">最新消息</h2>
-            <p class="section-subtitle">
-              以下為示意新聞卡片，實務上可連結至新聞或公告頁面。
-            </p>
-            <div class="card-grid">
-              <div class="card">
-                <div class="card-title">2025-01-15｜新型機隊維修能量啟用</div>
-                <div class="card-desc">
-                  公司完成新型客機維修設施與設備升級，提供更完整的機隊維護服務。
-                </div>
-              </div>
-              <div class="card">
-                <div class="card-title">2024-12-30｜通過國際品質認證複審</div>
-                <div class="card-desc">
-                  通過多項國際航空維修品質與安全認證複審，展現持續精進之成果。
-                </div>
-              </div>
-              <div class="card">
-                <div class="card-title">2024-11-10｜企業永續報告書發布</div>
-                <div class="card-desc">
-                  公布最新年度企業永續報告書，呈現 ESG 推動成果與未來目標。
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section class="home-esg">
-            <h2 class="section-title">企業永續（ESG）</h2>
-            <p class="section-subtitle">
-              以安全、環保與社會責任為核心，持續推動永續發展。
-            </p>
-            <div class="esg-layout">
+          <div class="container">
+            <section>
+              <h2 class="section-title">快速總覽</h2>
+              <p class="section-subtitle">Commitment to Aviation Safety</p>
               <div class="box">
-                <ul>
-                  <li>環境：導入節能設備、減少碳排與廢棄物產生。</li>
-                  <li>社會：重視員工職安衛、人才培育與社會關懷。</li>
-                  <li>治理：落實公司治理架構與風險管理機制。</li>
-                </ul>
+                長榮航太科技提供完整的航機維修、改裝、零組件維修與工程技術服務，
+                以飛安為最高原則，結合國際認證與多年航空維修經驗，持續提升機隊運作效率與可靠度。
               </div>
-              <div class="esg-image">
-                <img :src="esgImage" alt="企業永續示意" />
+            </section>
+
+            <section>
+              <h2 class="section-title">核心服務項目</h2>
+              <div class="card-grid">
+                <div class="card">
+                  <img src="images/page1.jpg" class="service-img">
+                  <div class="card-title">航機維修服務</div>
+                  <div class="card-desc">提供機隊例行檢查、停機線維護與結構修理，確保飛航安全與準點。</div>
+                </div>
+                <div class="card">
+                  <img src="images/page2.jpg" class="service-img">
+                  <div class="card-title">工程設計與改裝</div>
+                  <div class="card-desc">結合工程設計與製造能力，執行客艙改裝、系統升級與專案型工程服務。</div>
+                </div>
+                <div class="card">
+                  <img src="images/page3.jpg" class="service-img">
+                  <div class="card-title">零組件與航電維修</div>
+                  <div class="card-desc">涵蓋航電與關鍵零組件維修，支援機隊可靠度與營運效率。</div>
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
+
+            <section class="esg-layout">
+               <div class="esg-content">
+                  <h2 class="section-title">企業永續 (ESG)</h2>
+                  <div class="box">
+                    <ul style="padding-left: 20px;">
+                      <li>環境：導入節能設備、減少碳排與廢棄物產生。</li>
+                      <li>社會：重視員工職安衛、人才培育與社會關懷。</li>
+                      <li>治理：落實公司治理架構與風險管理機制。</li>
+                    </ul>
+                  </div>
+               </div>
+               <div class="esg-image">
+                  <img src="images/ESG3.jpg" alt="ESG">
+               </div>
+            </section>
+          </div>
         </div>
       `
     };
 
-    /* ===== 其他頁面元件定義 (已更新 AboutPage) ===== */
+    /* ===== 關於我們頁面 (AboutPage) ===== */
     const AboutPage = {
       template: `
-        <section 
-          style="background-image: url('images/EVA1.jpg'); 
-                 background-size: auto; /* 顯示原尺寸 */
-                 background-repeat: no-repeat; /* 避免重複 */
-                 background-position: center; /* 置中圖片 */
-                 background-attachment: fixed; 
-                 padding: 40px 16px; 
-                 position: relative;"
-        >
-          <div style="position: absolute; inset: 0; background-color: rgba(255, 255, 255, 0.6); z-index: 0;"></div>
-          
-          <div style="position: relative; z-index: 1; max-width: 1080px; margin: 0 auto;">
-            
-            <h2 class="section-title">公司簡介</h2>
-            <p class="section-subtitle">
-              介紹公司沿革、核心能力與經營理念。
-            </p>
-            
-            <div class="box" style="margin-bottom: 30px; background-color: rgba(255, 255, 255, 0.9);">
-              長榮航太科技承襲航空集團技術資源與維修能量，提供客戶機隊維修、改裝與零組件維修等整體解決方案。
-              公司以「安全、品質、效率」為核心價值，持續優化維修流程，引進創新科技，並與國際主要航空與航太產業夥伴維持緊密合作。
+        <div>
+            <div style="background: url('images/EVA1.jpg') center/cover fixed no-repeat; padding: 100px 20px; text-align: center; position: relative;">
+                <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.5);"></div>
+                <h1 style="position: relative; color: white; font-size: 36px; z-index: 1;">公司簡介</h1>
             </div>
 
-            <h2 class="section-title">歷史沿革</h2>
-            <p class="section-subtitle">
-              公司重要里程碑（資料參考公開資訊）。
-            </p>
-            <div class="box" style="background-color: rgba(255, 255, 255, 0.9);">
-              <ul style="list-style: none; padding-left: 0;">
-                <li style="margin-bottom: 12px; border-left: 3px solid #008f9c; padding-left: 10px;">
-                  <strong style="color: #003c5c;">1997年11月10日：</strong> 長榮航太科技股份有限公司正式成立。
-                </li>
-                <li style="margin-bottom: 12px; border-left: 3px solid #008f9c; padding-left: 10px;">
-                  <strong style="color: #003c5c;">1998年9月1日：</strong> 由長榮航空機務本部改制而成，並與美國奇異公司（GE）簽約合作。
-                </li>
-                <li style="margin-bottom: 12px; border-left: 3px solid #008f9c; padding-left: 10px;">
-                  <strong style="color: #003c5c;">2003年7月：</strong> 發動機修護工廠落成啟用。
-                </li>
-                <li style="margin-bottom: 12px; border-left: 3px solid #008f9c; padding-left: 10px;">
-                  <strong style="color: #003c5c;">2005年2月：</strong> 與波音簽署波音 747-400 LCF 改裝合約。
-                </li>
-                <li style="margin-bottom: 12px; border-left: 3px solid #008f9c; padding-left: 10px;">
-                  <strong style="color: #003c5c;">2009年：</strong> 獲美國《航空週刊》評選為亞太地區最佳獨立維修廠。
-                </li>
-                <li style="margin-bottom: 12px; border-left: 3px solid #008f9c; padding-left: 10px;">
-                  <strong style="color: #003c5c;">2019年3月：</strong> 併入長榮航宇精密，重新整合航機維修與製造資源。
-                </li>
-              </ul>
+            <div class="container">
+                <div class="box" style="margin-top: -50px; position: relative; z-index: 10;">
+                    <h2 style="color: var(--primary-color); margin-bottom: 20px;">關於長榮航太</h2>
+                    <p>長榮航太科技承襲航空集團技術資源與維修能量，提供客戶機隊維修、改裝與零組件維修等整體解決方案。</p>
+                    <p style="margin-top: 10px;">公司以「安全、品質、效率」為核心價值，持續優化維修流程，引進創新科技。</p>
+                </div>
+
+                <div style="margin-top: 40px;">
+                    <h3 class="section-title">歷史沿革</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 20px;">
+                         <li v-for="(item, idx) in history" :key="idx" 
+                             style="display: flex; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                             <div style="font-weight: bold; color: var(--primary-color); width: 150px; flex-shrink: 0;">{{ item.year }}</div>
+                             <div>{{ item.event }}</div>
+                         </li>
+                    </ul>
+                </div>
             </div>
-          </div>
-        </section>
-      `
-    }; 
-    
-    const ServicesPage = {
-      data() {
-        return {
-          services: [
-            {
-              title: '停機線維修服務',
-              desc: '提供航機過站檢查、例行維護與故障排除，降低地面停留時間，提升班機準點率。'
-            },
-            {
-              title: '定期大修與結構維修',
-              desc: '具備各型民航機之定期大修與結構檢修能力，並提供客製化改裝與艙內更新。'
-            },
-            {
-              title: '發動機與零組件維修',
-              desc: '涵蓋航電、起落架、液壓、氣源等關鍵系統與零組件維修，確保航機可靠度。'
-            },
-            {
-              title: '工程技術與製造支持',
-              desc: '整合工程設計分析、工裝治具開發與製造能量，支援機隊營運與改裝需求。'
-            }
-          ]
-        };
-      },
-      template: `
-        <section>
-          <h2 class="section-title">服務項目</h2>
-          <p class="section-subtitle">
-            以下為主要服務項目示意，可依實際營運項目增修。
-          </p>
-          <div class="card-grid">
-            <div class="card" v-for="s in services" :key="s.title">
-              <div class="card-title">{{ s.title }}</div>
-              <div class="card-desc">{{ s.desc }}</div>
-            </div>
-          </div>
-        </section>
-      `
+        </div>
+      `,
+      setup() {
+          return {
+              history: [
+                  { year: '1997年11月', event: '長榮航太科技股份有限公司正式成立。' },
+                  { year: '1998年09月', event: '由長榮航空機務本部改制而成，並與美國奇異公司（GE）簽約合作。' },
+                  { year: '2003年07月', event: '發動機修護工廠落成啟用。' },
+                  { year: '2019年03月', event: '併入長榮航宇精密，整合航機維修與製造資源。' }
+              ]
+          }
+      }
     };
     
-    const GovernancePage = {
-      template: `
-        <section>
-          <h2 class="section-title">公司治理</h2>
-          <p class="section-subtitle">
-            呈現董事會架構、內控制度與各項治理作為，可對應年報與公開資訊觀測站內容。
-          </p>
-          <div class="box">
-            <ul>
-              <li>董事會與功能性委員會之組成與職責說明。</li>
-              <li>內部稽核制度與風險管理機制摘要。</li>
-              <li>公司治理章程、道德準則與相關規章下載連結。</li>
-            </ul>
-          </div>
-        </section>
-      `
-    };
-    
-    const InvestorPage = {
-      template: `
-        <section>
-          <h2 class="section-title">投資人專區</h2>
-          <p class="section-subtitle">
-            提供投資人掌握公司營運與財務狀況的資訊，實務上可串接 PDF 或連結到公開資訊觀測站。
-          </p>
-          <div class="box">
-            <ul>
-              <li>財務報表、月營收與重大訊息公告連結。</li>
-              <li>股東會議事錄、股利政策與股價摘要。</li>
-              <li>法人說明會簡報與年度報告下載。</li>
-            </ul>
-          </div>
-        </section>
-      `
-    };
-    
-    const ESGPage = {
-      template: `
-        <section>
-          <h2 class="section-title">企業永續（ESG）</h2>
-          <p class="section-subtitle">
-            說明公司於環境、社會與公司治理面向的永續策略與具體作為。
-          </p>
-          <div class="box">
-            <ul>
-              <li>節能減碳、廢棄物減量與環境管理制度。</li>
-              <li>員工照顧、職安衛與人才培育計畫。</li>
-              <li>社會關懷活動與供應鏈永續管理。</li>
-              <li>ESG 報告書下載與永續績效目標。</li>
-            </ul>
-          </div>
-        </section>
-      `
-    };
+    // ... 其他頁面元件簡化版 (可直接沿用你的邏輯) ...
+    const ServicesPage = { template: '<div class="container"><h2 class="section-title">服務項目</h2><div class="box">服務內容詳情...</div></div>' };
+    const GovernancePage = { template: '<div class="container"><h2 class="section-title">公司治理</h2><div class="box">公司治理架構...</div></div>' };
+    const InvestorPage = { template: '<div class="container"><h2 class="section-title">投資人專區</h2><div class="box">財務資訊...</div></div>' };
+    const ESGPage = { template: '<div class="container"><h2 class="section-title">企業永續</h2><div class="box">ESG 報告書...</div></div>' };
 
     /* ===== Router & App ===== */
     const routes = [
@@ -813,14 +654,9 @@
     const app = createApp({
       setup() {
         const mobileNavOpen = ref(false);
-        const temps = ref({
-          TPE: 28,
-          NYC: 16,
-          TYO: 22
-        });
-        router.afterEach(() => {
-          mobileNavOpen.value = false;
-        });
+        const temps = ref({ TPE: 28, NYC: 16, TYO: 22 });
+        
+        router.afterEach(() => { mobileNavOpen.value = false; });
         return { mobileNavOpen, temps };
       }
     });
