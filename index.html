@@ -100,6 +100,9 @@
     .logo-img {
       height: 45px;
       width: auto;
+      /* 如果沒有圖片，暫時用背景色撐開 */
+      background-color: #eee; 
+      border-radius: 4px;
     }
 
     .logo-text {
@@ -201,6 +204,7 @@
       background-size: cover;
       background-position: center;
       transition: background-image 0.5s ease-in-out;
+      background-color: #333; /* 圖片未載入時的底色 */
     }
 
     /* 遮罩層：讓文字更清楚 */
@@ -280,7 +284,6 @@
       position: relative;
       display: inline-block;
     }
-    /* 標題下方的裝飾線 */
     .section-title::after {
       content: '';
       display: block;
@@ -322,9 +325,10 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.06);
       transition: transform 0.3s, box-shadow 0.3s;
       border: 1px solid #eee;
+      display: flex;
+      flex-direction: column;
     }
     
-    /* 卡片懸停效果 */
     .card:hover {
       transform: translateY(-5px);
       box-shadow: 0 10px 20px rgba(0,0,0,0.1);
@@ -340,6 +344,7 @@
     .card-desc {
       font-size: 15px;
       color: #555;
+      line-height: 1.6;
     }
 
     .service-img {
@@ -403,7 +408,7 @@
       
       <div class="nav-container">
         <router-link to="/" class="logo-group">
-          <img src="egat-logo.png" class="logo-img" alt="EGAT Logo">
+          <img src="images/egat-logo.png" class="logo-img" alt="EGAT Logo">
           <div class="logo-text">EGAT 長榮航太</div>
         </router-link>
 
@@ -443,7 +448,7 @@
     const { createApp, ref, computed, onMounted, onBeforeUnmount } = Vue;
     const { createRouter, createWebHashHistory } = VueRouter;
 
-    /* ===== 首頁元件 (HomePage) ===== */
+    /* ===== 1. 首頁元件 (HomePage) ===== */
     const HomePage = {
       name: 'HomePage',
       setup() {
@@ -451,19 +456,16 @@
           {
             title: '卓越技術 飛航安全',
             subtitle: '以專業維修實力與嚴謹品質管理，為全球航空夥伴提供可靠的飛機維修與改裝服務。',
-            tagline: 'MRO Service Provider',
-            image: 'images/hero1.jpg'
+            image: 'images/hero1.jpg' // 請確保有此圖片
           },
           {
             title: '整合工程與製造能量',
             subtitle: '從設計、製造到維修支持，提供一站式航空工程技術服務。',
-            tagline: 'Engineering & Manufacturing',
             image: 'images/hero2.jpg'
           },
           {
             title: '以永續思維打造安全天空',
             subtitle: '結合節能技術與綠色維修觀念，實踐企業永續責任。',
-            tagline: 'Sustainable Aviation',
             image: 'images/hero3.jpg'
           }
         ]);
@@ -472,45 +474,24 @@
 
         const currentSlide = computed(() => slides.value[currentSlideIndex.value]);
         
-        // 背景圖片樣式
         const heroBackgroundStyle = computed(() => ({
           backgroundImage: `url('${currentSlide.value.image}')`
         }));
 
-        const nextSlide = () => {
-          currentSlideIndex.value = (currentSlideIndex.value + 1) % slides.value.length;
-        };
-        
         const goToSlide = (idx) => { currentSlideIndex.value = idx; };
 
-        const startHeroCarousel = () => {
-            if (!heroTimer) heroTimer = setInterval(nextSlide, 6000);
-        };
-        const stopHeroCarousel = () => {
-            if (heroTimer) { clearInterval(heroTimer); heroTimer = null; }
-        };
-
-        // 右側小圖輪播
-        const rightImages = ref(['images/page1.jpg', 'images/page2.jpg', 'images/page3.jpg']);
-        const currentRightIndex = ref(0);
-        let rightTimer = null;
-
+        // 自動輪播邏輯
         onMounted(() => {
-          startHeroCarousel();
-          rightTimer = setInterval(() => {
-            currentRightIndex.value = (currentRightIndex.value + 1) % rightImages.value.length;
-          }, 4000);
+          heroTimer = setInterval(() => {
+            currentSlideIndex.value = (currentSlideIndex.value + 1) % slides.value.length;
+          }, 6000);
         });
 
         onBeforeUnmount(() => {
-          stopHeroCarousel();
-          if(rightTimer) clearInterval(rightTimer);
+          if (heroTimer) clearInterval(heroTimer);
         });
 
-        return {
-          slides, currentSlideIndex, currentSlide, heroBackgroundStyle, goToSlide,
-          rightImages, currentRightIndex
-        };
+        return { slides, currentSlideIndex, currentSlide, heroBackgroundStyle, goToSlide };
       },
       template: `
         <div>
@@ -531,41 +512,15 @@
                     </span>
                 </div>
               </div>
-
-              <div class="hero-image-placeholder">
-                <img :src="rightImages[currentRightIndex]" alt="Display">
-              </div>
             </div>
           </section>
 
           <div class="container">
             <section>
               <h2 class="section-title">快速總覽</h2>
-              <p class="section-subtitle">Commitment to Aviation Safety</p>
               <div class="box">
                 長榮航太科技提供完整的航機維修、改裝、零組件維修與工程技術服務，
                 以飛安為最高原則，結合國際認證與多年航空維修經驗，持續提升機隊運作效率與可靠度。
-              </div>
-            </section>
-
-            <section>
-              <h2 class="section-title">核心服務項目</h2>
-              <div class="card-grid">
-                <div class="card">
-                  <img src="images/page1.jpg" class="service-img">
-                  <div class="card-title">航機維修服務</div>
-                  <div class="card-desc">提供機隊例行檢查、停機線維護與結構修理，確保飛航安全與準點。</div>
-                </div>
-                <div class="card">
-                  <img src="images/page2.jpg" class="service-img">
-                  <div class="card-title">工程設計與改裝</div>
-                  <div class="card-desc">結合工程設計與製造能力，執行客艙改裝、系統升級與專案型工程服務。</div>
-                </div>
-                <div class="card">
-                  <img src="images/page3.jpg" class="service-img">
-                  <div class="card-title">零組件與航電維修</div>
-                  <div class="card-desc">涵蓋航電與關鍵零組件維修，支援機隊可靠度與營運效率。</div>
-                </div>
               </div>
             </section>
 
@@ -580,20 +535,17 @@
                     </ul>
                   </div>
                </div>
-               <div class="esg-image">
-                  <img src="images/ESG3.jpg" alt="ESG">
-               </div>
             </section>
           </div>
         </div>
       `
     };
 
-    /* ===== 關於我們頁面 (AboutPage) ===== */
+    /* ===== 2. 關於我們元件 (AboutPage) ===== */
     const AboutPage = {
       template: `
         <div>
-            <div style="background: url('images/EVA1.jpg') center/cover fixed no-repeat; padding: 100px 20px; text-align: center; position: relative;">
+            <div style="background: url('images/EVA1.jpg') center/cover fixed no-repeat; padding: 100px 20px; text-align: center; position: relative; background-color: #333;">
                 <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.5);"></div>
                 <h1 style="position: relative; color: white; font-size: 36px; z-index: 1;">公司簡介</h1>
             </div>
@@ -629,14 +581,74 @@
           }
       }
     };
-    
-    // ... 其他頁面元件簡化版 (可直接沿用你的邏輯) ...
-    const ServicesPage = { template: '<div class="container"><h2 class="section-title">服務項目</h2><div class="box">服務內容詳情...</div></div>' };
-    const GovernancePage = { template: '<div class="container"><h2 class="section-title">公司治理</h2><div class="box">公司治理架構...</div></div>' };
-    const InvestorPage = { template: '<div class="container"><h2 class="section-title">投資人專區</h2><div class="box">財務資訊...</div></div>' };
-    const ESGPage = { template: '<div class="container"><h2 class="section-title">企業永續</h2><div class="box">ESG 報告書...</div></div>' };
 
-    /* ===== Router & App ===== */
+    /* ===== 3. 服務項目元件 (ServicesPage) - 已更新 ===== */
+    const ServicesPage = {
+      data() {
+        return {
+          services: [
+            {
+              title: '停機線服務',
+              enTitle: 'Ramp & AOG Services',
+              desc: '提供 24/7 全天候的航機過站檢查、每日檢查與過夜檢查。具備強大的 AOG (Aircraft On Ground) 緊急支援團隊，確保機隊維持最高派遣率，讓每一次起飛都安全準時。',
+              img: 'images/service-ramp.jpg' 
+            },
+            {
+              title: '定期維修',
+              enTitle: 'HMV & Base Services',
+              desc: '擁有現代化的多棚廠設施，提供從 C-Check 到 D-Check 的各級定期維修服務。涵蓋機體結構檢查、防腐蝕處理、噴漆以及租機歸還檢測，確保飛機全生命週期的適航性。',
+              img: 'images/service-base.jpg'
+            },
+            {
+              title: '飛機改裝',
+              enTitle: 'Aircraft Conversion',
+              desc: '具備世界級的改裝工程能力，包括客機改貨機 (PTF)、航電系統升級、翼端帆 (Winglet) 加裝及客艙內裝更新。我們以精湛的技術，賦予飛機全新的任務與價值。',
+              img: 'images/service-conversion.jpg'
+            },
+            {
+              title: '零組件維修',
+              enTitle: 'Component & LRU Overhauls',
+              desc: '整合發動機、複合材料、起落架、液壓氣源與航電儀表的深度維修能量。提供一站式的零組件翻修解決方案，大幅縮短送修週期並降低營運成本。',
+              img: 'images/service-component.jpg'
+            }
+          ]
+        };
+      },
+      template: `
+        <div class="container">
+          <div class="box" style="margin-bottom: 40px; text-align: center;">
+            <h2 class="section-title">服務項目</h2>
+            <p class="section-subtitle">全方位的航空維修與工程解決方案</p>
+            <p style="max-width: 800px; margin: 0 auto; color: #555;">
+              長榮航太憑藉多年的維修經驗與國際認證，為全球客戶提供從機坪作業到深度翻修的完整服務鏈。
+            </p>
+          </div>
+
+          <div class="card-grid">
+            <div class="card" v-for="s in services" :key="s.title">
+              <div style="height: 200px; background-color: #eee; border-radius: 8px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; color: #999; overflow: hidden;">
+                 <span style="font-size: 14px;">{{ s.enTitle }} Image</span>
+              </div>
+              
+              <div class="card-title">{{ s.title }}</div>
+              <div style="font-size: 13px; color: #008f9c; font-weight: 600; margin-bottom: 10px;">
+                {{ s.enTitle }}
+              </div>
+              <div class="card-desc" style="text-align: justify;">
+                {{ s.desc }}
+              </div>
+            </div>
+          </div>
+        </div>
+      `
+    };
+
+    /* ===== 4. 其他頁面元件 (Placeholders) ===== */
+    const GovernancePage = { template: '<div class="container"><h2 class="section-title">公司治理</h2><div class="box">董事會、內控與法規遵循相關內容區。</div></div>' };
+    const InvestorPage = { template: '<div class="container"><h2 class="section-title">投資人專區</h2><div class="box">財務報表、股東會訊息與股價資訊區。</div></div>' };
+    const ESGPage = { template: '<div class="container"><h2 class="section-title">企業永續</h2><div class="box">ESG 報告書下載與永續專案介紹區。</div></div>' };
+
+    /* ===== 5. Router & App 初始化 ===== */
     const routes = [
       { path: '/', component: HomePage },
       { path: '/about', component: AboutPage },
@@ -656,7 +668,9 @@
         const mobileNavOpen = ref(false);
         const temps = ref({ TPE: 28, NYC: 16, TYO: 22 });
         
+        // 切換頁面後自動關閉手機版選單
         router.afterEach(() => { mobileNavOpen.value = false; });
+        
         return { mobileNavOpen, temps };
       }
     });
