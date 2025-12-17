@@ -15,71 +15,74 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <style>
-    /* === 全域變數定義 (方便統一修改顏色) === */
+    /* === 全域變數 === */
     :root {
-      --primary-color: #00703c; /* 長榮綠 */
-      --secondary-color: #008f9c; /* 輔助藍綠 */
-      --accent-color: #ffd153; /* 亮黃色 (按鈕/強調) */
+      --primary-color: #00703c;
+      --secondary-color: #008f9c;
+      --accent-color: #ffd153;
       --text-main: #333333;
       --text-light: #666666;
       --bg-light: #f9f9f9;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      font-family: 'Noto Sans TC', sans-serif;
       background-color: var(--bg-light);
       color: var(--text-main);
       line-height: 1.6;
     }
 
-    a {
-      text-decoration: none;
-      color: inherit;
-      transition: color 0.3s;
-    }
+    a { text-decoration: none; color: inherit; transition: color 0.3s; }
 
-    #app {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+    #app { min-height: 100vh; display: flex; flex-direction: column; }
 
-    /* === Header (改為白底風格) === */
+    /* === Header === */
     header {
       background: #ffffff;
       position: sticky;
       top: 0;
       z-index: 100;
       box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-      border-top: 4px solid var(--primary-color); /* 頂部綠色線條 */
+      border-top: 4px solid var(--primary-color);
     }
 
-    /* 天氣列 */
+    /* 天氣列優化 */
     .temp-bar {
-      background-color: #f0f0f0;
-      color: #666;
+      background-color: #f4f4f4;
+      color: #555;
       padding: 6px 0;
-      font-size: 12px;
+      font-size: 13px;
+      font-weight: 500;
       text-align: right;
+      border-bottom: 1px solid #e0e0e0;
     }
     .temp-bar-inner {
       max-width: 1200px;
       margin: 0 auto;
       padding: 0 20px;
+      display: flex;
+      justify-content: flex-end; /* 靠右對齊 */
+      align-items: center;
     }
-    .temp-bar span + span {
-      margin-left: 15px;
-      padding-left: 15px;
-      border-left: 1px solid #ccc;
+    .weather-item {
+      margin-left: 20px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    /* 加入一個小圓點裝飾 */
+    .weather-item::before {
+        content: '';
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        background-color: var(--secondary-color);
+        border-radius: 50%;
     }
 
-    /* 導覽列容器 */
+    /* 導覽列 */
     .nav-container {
       max-width: 1200px;
       margin: 0 auto;
@@ -90,308 +93,76 @@
       height: 80px;
     }
 
-    /* === Logo === */
-    .logo-group {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+    /* Logo */
+    .logo-group { display: flex; align-items: center; gap: 12px; }
+    .logo-img { height: 45px; width: auto; background-color: transparent; }
+    .logo-text { font-size: 24px; font-weight: 700; color: var(--primary-color); letter-spacing: 1px; }
 
-    .logo-img {
-      height: 45px;
-      width: auto;
-      /* 如果沒有圖片，暫時用背景色撐開 */
-      background-color: #eee; 
-      border-radius: 4px;
-    }
-
-    .logo-text {
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--primary-color);
-      letter-spacing: 1px;
-    }
-
-    /* === 選單連結 === */
-    .nav-links {
-      display: flex;
-      gap: 30px;
-      font-size: 16px;
-      align-items: center;
-    }
-
-    .nav-links a {
-      color: var(--text-main);
-      font-weight: 500;
-      position: relative;
-      padding: 5px 0;
-    }
-
-    /* 連結 Hover 與 Active 效果 */
-    .nav-links a:hover,
-    .nav-links a.router-link-active {
-      color: var(--primary-color);
-    }
-
+    /* 選單 */
+    .nav-links { display: flex; gap: 30px; font-size: 16px; align-items: center; }
+    .nav-links a { color: var(--text-main); font-weight: 500; position: relative; padding: 5px 0; }
+    .nav-links a:hover, .nav-links a.router-link-active { color: var(--primary-color); }
     .nav-links a::after {
-      content: '';
-      position: absolute;
-      width: 0;
-      height: 2px;
-      bottom: 0;
-      left: 0;
-      background-color: var(--primary-color);
-      transition: width 0.3s;
+      content: ''; position: absolute; width: 0; height: 2px; bottom: 0; left: 0;
+      background-color: var(--primary-color); transition: width 0.3s;
     }
+    .nav-links a:hover::after, .nav-links a.router-link-active::after { width: 100%; }
 
-    .nav-links a:hover::after,
-    .nav-links a.router-link-active::after {
-      width: 100%;
-    }
-
-    /* === 手機版漢堡選單 === */
-    .nav-toggle {
-      display: none;
-      cursor: pointer;
-      font-size: 26px;
-      color: var(--primary-color);
-    }
-
+    /* 手機版選單 */
+    .nav-toggle { display: none; cursor: pointer; font-size: 26px; color: var(--primary-color); }
     @media (max-width: 768px) {
-      .nav-toggle {
-        display: block;
-      }
+      .nav-toggle { display: block; }
       .nav-links {
-        display: none; /* 預設隱藏 */
-        position: absolute;
-        top: 100%; /* 接在 header 下方 */
-        left: 0;
-        width: 100%;
-        background-color: #fff;
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 20px;
-        box-shadow: 0 10px 15px rgba(0,0,0,0.1);
-        border-top: 1px solid #eee;
+        display: none; position: absolute; top: 100%; left: 0; width: 100%;
+        background-color: #fff; flex-direction: column; align-items: flex-start;
+        padding: 20px; box-shadow: 0 10px 15px rgba(0,0,0,0.1); border-top: 1px solid #eee;
       }
-      .nav-links.open {
-        display: flex;
-      }
-      .nav-links a {
-        width: 100%;
-        padding: 10px 0;
-        border-bottom: 1px solid #f5f5f5;
-      }
+      .nav-links.open { display: flex; }
+      .nav-links a { width: 100%; padding: 10px 0; border-bottom: 1px solid #f5f5f5; }
+      .temp-bar-inner { justify-content: center; font-size: 12px; } /* 手機版天氣置中 */
+      .weather-item { margin-left: 10px; margin-right: 10px; }
     }
 
-    /* === 主內容區 === */
-    main {
-      flex: 1;
-      width: 100%;
-    }
-    
-    .container {
-      max-width: 1200px;
-      margin: 40px auto;
-      padding: 0 20px;
-    }
+    /* === 主要內容與元件樣式 === */
+    main { flex: 1; width: 100%; }
+    .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
 
-    /* === HERO (主視覺) === */
+    /* Hero */
     .hero {
-      position: relative;
-      color: #fff;
-      padding: 80px 20px;
-      background-size: cover;
-      background-position: center;
-      transition: background-image 0.5s ease-in-out;
-      background-color: #333; /* 圖片未載入時的底色 */
+      position: relative; color: #fff; padding: 80px 20px;
+      background-size: cover; background-position: center;
+      transition: background-image 0.5s ease-in-out; background-color: #333;
     }
-
-    /* 遮罩層：讓文字更清楚 */
-    .hero::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(90deg, rgba(0, 36, 58, 0.9) 0%, rgba(0, 58, 90, 0.6) 100%);
-      z-index: 0;
-    }
-
-    .hero-inner {
-      position: relative;
-      z-index: 1;
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 40px;
-    }
-
-    .hero-text {
-      flex: 1 1 400px;
-    }
-
-    .hero-title {
-      font-size: 42px;
-      margin-bottom: 16px;
-      font-weight: 700;
-      line-height: 1.2;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    }
-
-    .hero-subtitle {
-      font-size: 18px;
-      opacity: 0.9;
-      margin-bottom: 30px;
-      line-height: 1.6;
-    }
-
+    .hero::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0, 36, 58, 0.9) 0%, rgba(0, 58, 90, 0.6) 100%); z-index: 0; }
+    .hero-inner { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 40px; }
+    .hero-text { flex: 1 1 400px; }
+    .hero-title { font-size: 42px; margin-bottom: 16px; font-weight: 700; line-height: 1.2; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+    .hero-subtitle { font-size: 18px; opacity: 0.9; margin-bottom: 30px; line-height: 1.6; }
     .hero-btn {
-      display: inline-block;
-      padding: 12px 30px;
-      background-color: var(--accent-color);
-      color: #00243a;
-      font-weight: 700;
-      border-radius: 4px;
-      transition: transform 0.2s, background-color 0.2s;
+      display: inline-block; padding: 12px 30px; background-color: var(--accent-color);
+      color: #00243a; font-weight: 700; border-radius: 4px; transition: transform 0.2s, background-color 0.2s;
     }
-    .hero-btn:hover {
-      background-color: #ffde8a;
-      transform: translateY(-2px);
-    }
+    .hero-btn:hover { background-color: #ffde8a; transform: translateY(-2px); }
 
-    /* Hero 右側圖片區 */
-    .hero-image-placeholder {
-      flex: 1 1 300px;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(5px);
-      padding: 15px;
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.2);
-    }
-    .hero-image-placeholder img {
-      width: 100%;
-      border-radius: 8px;
-      display: block;
-    }
+    /* 標題與卡片 */
+    .section-title { font-size: 28px; color: var(--primary-color); margin-bottom: 10px; font-weight: 700; position: relative; display: inline-block; }
+    .section-title::after { content: ''; display: block; width: 60px; height: 4px; background-color: var(--accent-color); margin-top: 8px; }
+    .box { background-color: #fff; border-radius: 8px; padding: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-left: 5px solid var(--primary-color); }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+    .card { background-color: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: transform 0.3s, box-shadow 0.3s; border: 1px solid #eee; }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+    .card-title { font-size: 18px; font-weight: 700; margin-bottom: 10px; color: var(--primary-color); }
+    .card-desc { font-size: 15px; color: #555; line-height: 1.6; }
 
-    /* === 通用標題樣式 === */
-    .section-title {
-      font-size: 28px;
-      color: var(--primary-color);
-      margin-bottom: 10px;
-      font-weight: 700;
-      position: relative;
-      display: inline-block;
-    }
-    .section-title::after {
-      content: '';
-      display: block;
-      width: 60px;
-      height: 4px;
-      background-color: var(--accent-color);
-      margin-top: 8px;
-    }
-
-    .section-subtitle {
-      font-size: 16px;
-      color: var(--text-light);
-      margin-bottom: 30px;
-    }
-
-    section {
-      margin-bottom: 60px;
-    }
-
-    /* === 卡片樣式 (Box & Cards) === */
-    .box {
-      background-color: #fff;
-      border-radius: 8px;
-      padding: 30px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      border-left: 5px solid var(--primary-color);
-    }
-
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 24px;
-    }
-
-    .card {
-      background-color: #fff;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      transition: transform 0.3s, box-shadow 0.3s;
-      border: 1px solid #eee;
-      display: flex;
-      flex-direction: column;
-    }
-    
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    }
-
-    .card-title {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 10px;
-      color: var(--primary-color);
-    }
-
-    .card-desc {
-      font-size: 15px;
-      color: #555;
-      line-height: 1.6;
-    }
-
-    .service-img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-      border-radius: 8px;
-      margin-bottom: 15px;
-    }
-
-    /* === ESG 區塊 === */
-    .esg-layout {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 30px;
-      align-items: flex-start;
-    }
+    /* ESG */
+    .esg-layout { display: flex; flex-wrap: wrap; gap: 30px; align-items: flex-start; }
     .esg-content { flex: 2; }
-    .esg-image { 
-      flex: 1; 
-      min-width: 250px;
-    }
-    .esg-image img {
-      width: 100%;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
+    .esg-image { flex: 1; min-width: 250px; }
+    .esg-image img { width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
 
-    /* === Footer === */
-    footer {
-      background-color: #222;
-      color: #bbb;
-      padding: 40px 0;
-      font-size: 14px;
-      margin-top: auto;
-    }
-    .footer-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 20px;
-    }
-    .footer-info div { margin-bottom: 8px; }
-
+    /* Footer */
+    footer { background-color: #222; color: #bbb; padding: 40px 0; font-size: 14px; margin-top: auto; }
+    .footer-content { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 20px; }
   </style>
 </head>
 <body>
@@ -400,9 +171,9 @@
     <header>
       <div class="temp-bar">
         <div class="temp-bar-inner">
-            <span>TPE {{ temps.TPE }}°C</span>
-            <span>NYC {{ temps.NYC }}°C</span>
-            <span>TYO {{ temps.TYO }}°C</span>
+            <div class="weather-item">TPE {{ temps.TPE }}°C</div>
+            <div class="weather-item">NYC {{ temps.NYC }}°C</div>
+            <div class="weather-item">TYO {{ temps.TYO }}°C</div>
         </div>
       </div>
       
@@ -436,9 +207,7 @@
           <div>桃園市大園區桃園國際機場航站南路 6 號</div>
           <div>Tel: +886 (3) 351 9500</div>
         </div>
-        <div class="copyright">
-          Copyright © EGAT Demo. All Rights Reserved.
-        </div>
+        <div class="copyright">Copyright © EGAT Demo. All Rights Reserved.</div>
       </div>
     </footer>
 
@@ -448,48 +217,25 @@
     const { createApp, ref, computed, onMounted, onBeforeUnmount } = Vue;
     const { createRouter, createWebHashHistory } = VueRouter;
 
-    /* ===== 1. 首頁元件 (HomePage) ===== */
+    /* ===== 首頁元件 ===== */
     const HomePage = {
       name: 'HomePage',
       setup() {
         const slides = ref([
-          {
-            title: '卓越技術 飛航安全',
-            subtitle: '以專業維修實力與嚴謹品質管理，為全球航空夥伴提供可靠的飛機維修與改裝服務。',
-            image: 'images/hero1.jpg' // 請確保有此圖片
-          },
-          {
-            title: '整合工程與製造能量',
-            subtitle: '從設計、製造到維修支持，提供一站式航空工程技術服務。',
-            image: 'images/hero2.jpg'
-          },
-          {
-            title: '以永續思維打造安全天空',
-            subtitle: '結合節能技術與綠色維修觀念，實踐企業永續責任。',
-            image: 'images/hero3.jpg'
-          }
+          { title: '卓越技術 飛航安全', subtitle: '以專業維修實力與嚴謹品質管理，為全球航空夥伴提供可靠的飛機維修與改裝服務。', image: 'images/hero1.jpg' },
+          { title: '整合工程與製造能量', subtitle: '從設計、製造到維修支持，提供一站式航空工程技術服務。', image: 'images/hero2.jpg' },
+          { title: '以永續思維打造安全天空', subtitle: '結合節能技術與綠色維修觀念，實踐企業永續責任。', image: 'images/hero3.jpg' }
         ]);
         const currentSlideIndex = ref(0);
         let heroTimer = null;
-
         const currentSlide = computed(() => slides.value[currentSlideIndex.value]);
-        
-        const heroBackgroundStyle = computed(() => ({
-          backgroundImage: `url('${currentSlide.value.image}')`
-        }));
-
+        const heroBackgroundStyle = computed(() => ({ backgroundImage: `url('${currentSlide.value.image}')` }));
         const goToSlide = (idx) => { currentSlideIndex.value = idx; };
-
-        // 自動輪播邏輯
+        
         onMounted(() => {
-          heroTimer = setInterval(() => {
-            currentSlideIndex.value = (currentSlideIndex.value + 1) % slides.value.length;
-          }, 6000);
+          heroTimer = setInterval(() => { currentSlideIndex.value = (currentSlideIndex.value + 1) % slides.value.length; }, 6000);
         });
-
-        onBeforeUnmount(() => {
-          if (heroTimer) clearInterval(heroTimer);
-        });
+        onBeforeUnmount(() => { if (heroTimer) clearInterval(heroTimer); });
 
         return { slides, currentSlideIndex, currentSlide, heroBackgroundStyle, goToSlide };
       },
@@ -501,29 +247,20 @@
                 <div class="hero-title">{{ currentSlide.title }}</div>
                 <div class="hero-subtitle">{{ currentSlide.subtitle }}</div>
                 <router-link class="hero-btn" to="/about">了解更多</router-link>
-                
                 <div style="margin-top: 30px; display: flex; gap: 10px;">
-                    <span v-for="(s, idx) in slides" :key="idx" 
-                          @click="goToSlide(idx)"
-                          :style="{
-                              width: '12px', height: '12px', borderRadius: '50%', cursor: 'pointer',
-                              background: idx === currentSlideIndex ? '#ffd153' : 'rgba(255,255,255,0.5)'
-                          }">
-                    </span>
+                    <span v-for="(s, idx) in slides" :key="idx" @click="goToSlide(idx)"
+                          :style="{ width: '12px', height: '12px', borderRadius: '50%', cursor: 'pointer', background: idx === currentSlideIndex ? '#ffd153' : 'rgba(255,255,255,0.5)' }"></span>
                 </div>
               </div>
             </div>
           </section>
-
           <div class="container">
             <section>
               <h2 class="section-title">快速總覽</h2>
               <div class="box">
-                長榮航太科技提供完整的航機維修、改裝、零組件維修與工程技術服務，
-                以飛安為最高原則，結合國際認證與多年航空維修經驗，持續提升機隊運作效率與可靠度。
+                長榮航太科技提供完整的航機維修、改裝、零組件維修與工程技術服務，以飛安為最高原則，結合國際認證與多年航空維修經驗，持續提升機隊運作效率與可靠度。
               </div>
             </section>
-
             <section class="esg-layout">
                <div class="esg-content">
                   <h2 class="section-title">企業永續 (ESG)</h2>
@@ -541,7 +278,7 @@
       `
     };
 
-    /* ===== 2. 關於我們元件 (AboutPage) ===== */
+    /* ===== 關於我們 ===== */
     const AboutPage = {
       template: `
         <div>
@@ -549,19 +286,15 @@
                 <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.5);"></div>
                 <h1 style="position: relative; color: white; font-size: 36px; z-index: 1;">公司簡介</h1>
             </div>
-
             <div class="container">
                 <div class="box" style="margin-top: -50px; position: relative; z-index: 10;">
                     <h2 style="color: var(--primary-color); margin-bottom: 20px;">關於長榮航太</h2>
                     <p>長榮航太科技承襲航空集團技術資源與維修能量，提供客戶機隊維修、改裝與零組件維修等整體解決方案。</p>
-                    <p style="margin-top: 10px;">公司以「安全、品質、效率」為核心價值，持續優化維修流程，引進創新科技。</p>
                 </div>
-
                 <div style="margin-top: 40px;">
                     <h3 class="section-title">歷史沿革</h3>
                     <ul style="list-style: none; padding: 0; margin-top: 20px;">
-                         <li v-for="(item, idx) in history" :key="idx" 
-                             style="display: flex; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                         <li v-for="(item, idx) in history" :key="idx" style="display: flex; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
                              <div style="font-weight: bold; color: var(--primary-color); width: 150px; flex-shrink: 0;">{{ item.year }}</div>
                              <div>{{ item.event }}</div>
                          </li>
@@ -582,35 +315,15 @@
       }
     };
 
-    /* ===== 3. 服務項目元件 (ServicesPage) - 已更新 ===== */
+    /* ===== 服務項目 ===== */
     const ServicesPage = {
       data() {
         return {
           services: [
-            {
-              title: '停機線服務',
-              enTitle: 'Ramp & AOG Services',
-              desc: '提供 24/7 全天候的航機過站檢查、每日檢查與過夜檢查。具備強大的 AOG (Aircraft On Ground) 緊急支援團隊，確保機隊維持最高派遣率，讓每一次起飛都安全準時。',
-              img: 'images/service-ramp.jpg' 
-            },
-            {
-              title: '定期維修',
-              enTitle: 'HMV & Base Services',
-              desc: '擁有現代化的多棚廠設施，提供從 C-Check 到 D-Check 的各級定期維修服務。涵蓋機體結構檢查、防腐蝕處理、噴漆以及租機歸還檢測，確保飛機全生命週期的適航性。',
-              img: 'images/service-base.jpg'
-            },
-            {
-              title: '飛機改裝',
-              enTitle: 'Aircraft Conversion',
-              desc: '具備世界級的改裝工程能力，包括客機改貨機 (PTF)、航電系統升級、翼端帆 (Winglet) 加裝及客艙內裝更新。我們以精湛的技術，賦予飛機全新的任務與價值。',
-              img: 'images/service-conversion.jpg'
-            },
-            {
-              title: '零組件維修',
-              enTitle: 'Component & LRU Overhauls',
-              desc: '整合發動機、複合材料、起落架、液壓氣源與航電儀表的深度維修能量。提供一站式的零組件翻修解決方案，大幅縮短送修週期並降低營運成本。',
-              img: 'images/service-component.jpg'
-            }
+            { title: '停機線服務', enTitle: 'Ramp & AOG Services', desc: '提供 24/7 全天候的航機過站檢查、每日檢查與過夜檢查。具備強大的 AOG (Aircraft On Ground) 緊急支援團隊。', img: 'images/service-ramp.jpg' },
+            { title: '定期維修', enTitle: 'HMV & Base Services', desc: '擁有現代化的多棚廠設施，提供從 C-Check 到 D-Check 的各級定期維修服務。涵蓋機體結構檢查、防腐蝕處理。', img: 'images/service-base.jpg' },
+            { title: '飛機改裝', enTitle: 'Aircraft Conversion', desc: '具備世界級的改裝工程能力，包括客機改貨機 (PTF)、航電系統升級、翼端帆 (Winglet) 加裝。', img: 'images/service-conversion.jpg' },
+            { title: '零組件維修', enTitle: 'Component & LRU Overhauls', desc: '整合發動機、複合材料、起落架、液壓氣源與航電儀表的深度維修能量。提供一站式的零組件翻修解決方案。', img: 'images/service-component.jpg' }
           ]
         };
       },
@@ -619,36 +332,27 @@
           <div class="box" style="margin-bottom: 40px; text-align: center;">
             <h2 class="section-title">服務項目</h2>
             <p class="section-subtitle">全方位的航空維修與工程解決方案</p>
-            <p style="max-width: 800px; margin: 0 auto; color: #555;">
-              長榮航太憑藉多年的維修經驗與國際認證，為全球客戶提供從機坪作業到深度翻修的完整服務鏈。
-            </p>
           </div>
-
           <div class="card-grid">
             <div class="card" v-for="s in services" :key="s.title">
               <div style="height: 200px; background-color: #eee; border-radius: 8px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; color: #999; overflow: hidden;">
                  <span style="font-size: 14px;">{{ s.enTitle }} Image</span>
               </div>
-              
               <div class="card-title">{{ s.title }}</div>
-              <div style="font-size: 13px; color: #008f9c; font-weight: 600; margin-bottom: 10px;">
-                {{ s.enTitle }}
-              </div>
-              <div class="card-desc" style="text-align: justify;">
-                {{ s.desc }}
-              </div>
+              <div style="font-size: 13px; color: #008f9c; font-weight: 600; margin-bottom: 10px;">{{ s.enTitle }}</div>
+              <div class="card-desc">{{ s.desc }}</div>
             </div>
           </div>
         </div>
       `
     };
 
-    /* ===== 4. 其他頁面元件 (Placeholders) ===== */
-    const GovernancePage = { template: '<div class="container"><h2 class="section-title">公司治理</h2><div class="box">董事會、內控與法規遵循相關內容區。</div></div>' };
-    const InvestorPage = { template: '<div class="container"><h2 class="section-title">投資人專區</h2><div class="box">財務報表、股東會訊息與股價資訊區。</div></div>' };
-    const ESGPage = { template: '<div class="container"><h2 class="section-title">企業永續</h2><div class="box">ESG 報告書下載與永續專案介紹區。</div></div>' };
+    /* ===== 其他頁面 Placeholders ===== */
+    const GovernancePage = { template: '<div class="container"><h2 class="section-title">公司治理</h2><div class="box">公司治理相關內容。</div></div>' };
+    const InvestorPage = { template: '<div class="container"><h2 class="section-title">投資人專區</h2><div class="box">投資人相關資訊。</div></div>' };
+    const ESGPage = { template: '<div class="container"><h2 class="section-title">企業永續</h2><div class="box">ESG 相關內容。</div></div>' };
 
-    /* ===== 5. Router & App 初始化 ===== */
+    /* ===== Vue 實體與路由 ===== */
     const routes = [
       { path: '/', component: HomePage },
       { path: '/about', component: AboutPage },
@@ -666,11 +370,46 @@
     const app = createApp({
       setup() {
         const mobileNavOpen = ref(false);
-        const temps = ref({ TPE: 28, NYC: 16, TYO: 22 });
-        
-        // 切換頁面後自動關閉手機版選單
+        // 初始化溫度，先顯示 '--' 讓使用者知道在讀取中
+        const temps = ref({ TPE: '--', NYC: '--', TYO: '--' });
+
+        // 定義抓取天氣的函數 (使用 Open-Meteo 免費 API)
+        const fetchWeather = async () => {
+          // 定義各城市的經緯度
+          // 台北 (25.03, 121.56), 紐約 (40.71, -74.00), 東京 (35.68, 139.65)
+          const cities = [
+            { key: 'TPE', lat: 25.03, lon: 121.56 },
+            { key: 'NYC', lat: 40.71, lon: -74.00 },
+            { key: 'TYO', lat: 35.68, lon: 139.65 }
+          ];
+
+          for (const city of cities) {
+            try {
+              // 呼叫 API
+              const url = `https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&current_weather=true`;
+              const res = await fetch(url);
+              const data = await res.json();
+              
+              // 更新數據 (Math.round 四雪五入)
+              if (data.current_weather) {
+                temps.value[city.key] = Math.round(data.current_weather.temperature);
+              }
+            } catch (error) {
+              console.error(`無法抓取 ${city.key} 天氣`, error);
+              // 失敗時保持 '--' 或顯示 'N/A'
+            }
+          }
+        };
+
+        // 當元件掛載完成後，執行抓取天氣
+        onMounted(() => {
+          fetchWeather();
+          
+          // 選項：每 30 分鐘自動更新一次 (1800000 毫秒)
+          setInterval(fetchWeather, 1800000);
+        });
+
         router.afterEach(() => { mobileNavOpen.value = false; });
-        
         return { mobileNavOpen, temps };
       }
     });
