@@ -13,6 +13,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <style>
+    /* === 樣式設定 (保持不變) === */
     :root {
       --primary-color: #00703c;
       --secondary-color: #008f9c;
@@ -32,6 +33,7 @@
     .temp-bar-inner { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: flex-end; align-items: center; }
     .weather-item { margin-left: 20px; display: flex; align-items: center; gap: 5px; }
     .weather-item::before { content: ''; display: inline-block; width: 6px; height: 6px; background-color: var(--secondary-color); border-radius: 50%; }
+    
     .nav-container { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; height: 80px; }
     .logo-group { display: flex; align-items: center; gap: 12px; }
     .logo-img { height: 45px; width: auto; }
@@ -52,12 +54,38 @@
     .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
     section { margin-bottom: 60px; }
     
-    .hero { position: relative; color: #fff; padding: 80px 20px; background-size: cover; background-position: center; transition: background-image 0.5s; background-color: #333; }
-    .hero::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,36,58,0.9), rgba(0,58,90,0.6)); z-index: 0; }
-    .hero-inner { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; }
-    .hero-title { font-size: 42px; font-weight: 700; margin-bottom: 16px; }
+    /* Hero 區塊優化 */
+    .hero { 
+      position: relative; color: #fff; padding: 80px 20px; 
+      background-size: cover; background-position: center; 
+      transition: background-image 0.5s ease-in-out; 
+      background-color: #333; /* 圖片載入前的底色 */
+    }
+    .hero::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,36,58,0.95) 0%, rgba(0,58,90,0.7) 100%); z-index: 0; }
+    .hero-inner { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 40px; }
+    .hero-text { flex: 1 1 400px; }
+    .hero-title { font-size: 42px; font-weight: 700; margin-bottom: 16px; line-height: 1.2; text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+    .hero-subtitle { font-size: 18px; opacity: 0.9; margin-bottom: 30px; line-height: 1.6; }
     .hero-btn { display: inline-block; padding: 12px 30px; background: var(--accent-color); color: #00243a; font-weight: 700; border-radius: 4px; }
+    .hero-btn:hover { background-color: #ffde8a; transform: translateY(-2px); }
 
+    /* Hero 右側圖片佔位區 */
+    .hero-image-placeholder {
+      flex: 1 1 300px;
+      height: 300px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(5px);
+      padding: 15px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .hero-image-placeholder img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+
+    /* 標題與卡片 */
     .section-title { font-size: 28px; color: var(--primary-color); margin-bottom: 20px; font-weight: 700; position: relative; display: inline-block; }
     .section-title::after { content: ''; display: block; width: 60px; height: 4px; background: var(--accent-color); margin-top: 8px; }
     
@@ -67,8 +95,6 @@
     .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
     .card-title { font-size: 18px; font-weight: 700; margin-bottom: 10px; color: var(--primary-color); }
     .card-desc { font-size: 15px; color: #555; }
-
-    /* News Card Date */
     .news-date { font-size: 13px; color: #999; margin-bottom: 5px; font-weight: 500; }
 
     /* Footer */
@@ -122,7 +148,7 @@
     const { createApp, ref, computed, onMounted, onBeforeUnmount } = Vue;
     const { createRouter, createWebHashHistory } = VueRouter;
 
-    /* ===== 1. 首頁 (內容已補回) ===== */
+    /* ===== 1. 首頁 (Hero 區塊已完全修復) ===== */
     const HomePage = {
       name: 'HomePage',
       setup() {
@@ -133,34 +159,59 @@
           { title: '以永續思維打造安全天空', subtitle: '結合節能技術與綠色維修觀念，實踐企業永續責任。', image: 'images/hero3.jpg' }
         ]);
         const currentSlideIndex = ref(0);
+        // 背景圖隨輪播更換
         const heroBackgroundStyle = computed(() => ({ backgroundImage: `url('${slides.value[currentSlideIndex.value].image}')` }));
         
-        onMounted(() => { setInterval(() => { currentSlideIndex.value = (currentSlideIndex.value + 1) % slides.value.length; }, 6000); });
+        // 設定輪播計時器
+        let heroTimer = null;
+        const goToSlide = (idx) => { currentSlideIndex.value = idx; };
         
-        // 核心服務預覽資料 (對應 ServicesPage)
+        onMounted(() => { 
+            heroTimer = setInterval(() => { currentSlideIndex.value = (currentSlideIndex.value + 1) % slides.value.length; }, 6000); 
+        });
+        onBeforeUnmount(() => { if (heroTimer) clearInterval(heroTimer); });
+        
+        // 核心服務預覽
         const servicePreviews = ref([
-            { title: '停機線服務', desc: '24/7 全天候航機過站檢查與 AOG 支援。', img: 'images/service-ramp.jpg' },
-            { title: '定期維修', desc: 'C-Check 到 D-Check 各級定期維修與結構檢查。', img: 'images/service-base.jpg' },
-            { title: '飛機改裝', desc: '客機改貨機 (PTF) 及航電系統升級改裝。', img: 'images/service-conversion.jpg' },
-            { title: '零組件維修', desc: '發動機、複合材料與關鍵零組件深度翻修。', img: 'images/service-component.jpg' }
+            { title: '停機線服務', desc: '24/7 全天候航機過站檢查與 AOG 支援。' },
+            { title: '定期維修', desc: 'C-Check 到 D-Check 各級定期維修與結構檢查。' },
+            { title: '飛機改裝', desc: '客機改貨機 (PTF) 及航電系統升級改裝。' },
+            { title: '零組件維修', desc: '發動機、複合材料與關鍵零組件深度翻修。' }
         ]);
 
-        // 最新消息資料 (補回)
+        // 最新消息
         const newsList = ref([
             { date: '2025-01-15', title: '新型機隊維修能量啟用', desc: '公司完成新型客機維修設施與設備升級，提供更完整的機隊維護服務。' },
             { date: '2024-12-30', title: '通過國際品質認證複審', desc: '通過多項國際航空維修品質與安全認證複審，展現持續精進之成果。' },
             { date: '2024-11-10', title: '企業永續報告書發布', desc: '公布最新年度企業永續報告書，呈現 ESG 推動成果與未來目標。' }
         ]);
 
-        return { slides, currentSlideIndex, heroBackgroundStyle, servicePreviews, newsList };
+        return { slides, currentSlideIndex, heroBackgroundStyle, goToSlide, servicePreviews, newsList };
       },
       template: `
         <div>
           <section class="hero" :style="heroBackgroundStyle">
             <div class="hero-inner">
-                <div class="hero-title">{{ slides[currentSlideIndex].title }}</div>
-                <div style="font-size: 18px; margin-bottom: 30px;">{{ slides[currentSlideIndex].subtitle }}</div>
-                <router-link class="hero-btn" to="/about">了解更多</router-link>
+                <div class="hero-text">
+                    <div class="hero-title">{{ slides[currentSlideIndex].title }}</div>
+                    <div class="hero-subtitle">{{ slides[currentSlideIndex].subtitle }}</div>
+                    <router-link class="hero-btn" to="/about">了解更多</router-link>
+                    
+                    <div style="margin-top: 30px; display: flex; gap: 10px;">
+                        <span v-for="(s, idx) in slides" :key="idx" 
+                              @click="goToSlide(idx)"
+                              :style="{
+                                  width: '12px', height: '12px', borderRadius: '50%', cursor: 'pointer',
+                                  background: idx === currentSlideIndex ? '#ffd153' : 'rgba(255,255,255,0.4)',
+                                  transition: 'background 0.3s'
+                              }">
+                        </span>
+                    </div>
+                </div>
+
+                <div class="hero-image-placeholder">
+                    <img :src="slides[currentSlideIndex].image" alt="Slide Image" style="opacity: 0.9;">
+                </div>
             </div>
           </section>
 
@@ -183,9 +234,6 @@
                    <div class="card-desc">{{ s.desc }}</div>
                 </div>
               </div>
-              <div style="text-align: center; margin-top: 20px;">
-                  <router-link to="/services" style="color: var(--secondary-color); font-weight: bold; border-bottom: 1px solid;">查看完整服務內容 &rarr;</router-link>
-              </div>
             </section>
 
             <section>
@@ -201,17 +249,12 @@
 
             <section>
                 <h2 class="section-title">企業永續 (ESG)</h2>
-                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                    <div class="box" style="flex: 2;">
-                        <ul style="padding-left: 20px;">
-                            <li>環境：導入節能設備、減少碳排與廢棄物產生。</li>
-                            <li>社會：重視員工職安衛、人才培育與社會關懷。</li>
-                            <li>治理：落實公司治理架構與風險管理機制。</li>
-                        </ul>
-                    </div>
-                    <div style="flex: 1; min-width: 200px; background: #ddd; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                        <span style="color: #666;">ESG Image</span>
-                    </div>
+                <div class="box">
+                    <ul style="padding-left: 20px;">
+                        <li>環境：導入節能設備、減少碳排與廢棄物產生。</li>
+                        <li>社會：重視員工職安衛、人才培育與社會關懷。</li>
+                        <li>治理：落實公司治理架構與風險管理機制。</li>
+                    </ul>
                 </div>
             </section>
           </div>
@@ -256,7 +299,7 @@
       }
     };
 
-    /* ===== 3. 服務項目 (維持更新後的 4 項) ===== */
+    /* ===== 3. 服務項目 ===== */
     const ServicesPage = {
       data() {
         return {
