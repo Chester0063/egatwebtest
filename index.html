@@ -13,7 +13,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <style>
-    /* === 樣式設定 (保持不變) === */
+    /* === 樣式設定 === */
     :root {
       --primary-color: #00703c;
       --secondary-color: #008f9c;
@@ -54,12 +54,12 @@
     .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
     section { margin-bottom: 60px; }
     
-    /* Hero 區塊優化 */
+    /* Hero 區塊 */
     .hero { 
       position: relative; color: #fff; padding: 80px 20px; 
       background-size: cover; background-position: center; 
       transition: background-image 0.5s ease-in-out; 
-      background-color: #333; /* 圖片載入前的底色 */
+      background-color: #333; 
     }
     .hero::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,36,58,0.95) 0%, rgba(0,58,90,0.7) 100%); z-index: 0; }
     .hero-inner { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 40px; }
@@ -96,6 +96,12 @@
     .card-title { font-size: 18px; font-weight: 700; margin-bottom: 10px; color: var(--primary-color); }
     .card-desc { font-size: 15px; color: #555; }
     .news-date { font-size: 13px; color: #999; margin-bottom: 5px; font-weight: 500; }
+
+    /* ESG 專用樣式 (這次有回來了！) */
+    .esg-layout { display: flex; flex-wrap: wrap; gap: 30px; align-items: flex-start; }
+    .esg-content { flex: 2; }
+    .esg-image { flex: 1; min-width: 250px; }
+    .esg-image img { width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
 
     /* Footer */
     footer { background: #222; color: #bbb; padding: 40px 0; font-size: 14px; margin-top: auto; }
@@ -148,7 +154,7 @@
     const { createApp, ref, computed, onMounted, onBeforeUnmount } = Vue;
     const { createRouter, createWebHashHistory } = VueRouter;
 
-    /* ===== 1. 首頁 (Hero 區塊已完全修復) ===== */
+    /* ===== 1. 首頁 (Hero + Services + News + ESG) ===== */
     const HomePage = {
       name: 'HomePage',
       setup() {
@@ -159,10 +165,8 @@
           { title: '以永續思維打造安全天空', subtitle: '結合節能技術與綠色維修觀念，實踐企業永續責任。', image: 'images/hero3.jpg' }
         ]);
         const currentSlideIndex = ref(0);
-        // 背景圖隨輪播更換
         const heroBackgroundStyle = computed(() => ({ backgroundImage: `url('${slides.value[currentSlideIndex.value].image}')` }));
         
-        // 設定輪播計時器
         let heroTimer = null;
         const goToSlide = (idx) => { currentSlideIndex.value = idx; };
         
@@ -208,7 +212,6 @@
                         </span>
                     </div>
                 </div>
-
                 <div class="hero-image-placeholder">
                     <img :src="slides[currentSlideIndex].image" alt="Slide Image" style="opacity: 0.9;">
                 </div>
@@ -247,15 +250,20 @@
               </div>
             </section>
 
-            <section>
-                <h2 class="section-title">企業永續 (ESG)</h2>
-                <div class="box">
+            <section class="esg-layout">
+               <div class="esg-content">
+                  <h2 class="section-title">企業永續 (ESG)</h2>
+                  <div class="box">
                     <ul style="padding-left: 20px;">
-                        <li>環境：導入節能設備、減少碳排與廢棄物產生。</li>
-                        <li>社會：重視員工職安衛、人才培育與社會關懷。</li>
-                        <li>治理：落實公司治理架構與風險管理機制。</li>
+                      <li>環境：導入節能設備、減少碳排與廢棄物產生。</li>
+                      <li>社會：重視員工職安衛、人才培育與社會關懷。</li>
+                      <li>治理：落實公司治理架構與風險管理機制。</li>
                     </ul>
-                </div>
+                  </div>
+               </div>
+               <div class="esg-image">
+                  <img src="images/ESG3.jpg" alt="ESG">
+               </div>
             </section>
           </div>
         </div>
